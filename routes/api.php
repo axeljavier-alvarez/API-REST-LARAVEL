@@ -9,51 +9,61 @@ Route::get('/', function () {
     ]);
 });
 
-// listar registros
+// // listar registros
 
-// Route::get('users', function(){
-//     return response()->json([
-//         'message' => 'Listado de usuarios'
-//     ]);
-// });
+// // Route::get('users', function(){
+// //     return response()->json([
+// //         'message' => 'Listado de usuarios'
+// //     ]);
+// // });
 
-Route::get('users', [UserController::class, 'index']);
+// Route::get('users', [UserController::class, 'index']);
 
-// crear registros
-// Route::post('users', function(){
-//     return response()->json([
-//         'message' => 'Usuario creado'
-//     ]);
-// });
+// // crear registros
+// // Route::post('users', function(){
+// //     return response()->json([
+// //         'message' => 'Usuario creado'
+// //     ]);
+// // });
 
-Route::post('users', [UserController::class, 'store']);
-// recuperar registros
-// Route::get('users/{id}', function($id){
-//     return response()->json([
-//         'message' => 'Usuario recuperado: '. $id
-//     ]);
-// });
-Route::get('users/{id}', [UserController::class, 'show']);
+// Route::post('users', [UserController::class, 'store']);
+// // recuperar registros
+// // Route::get('users/{id}', function($id){
+// //     return response()->json([
+// //         'message' => 'Usuario recuperado: '. $id
+// //     ]);
+// // });
+// Route::get('users/{id}', [UserController::class, 'show']);
 
 
-// actualizar registros
-// Route::put('users/{id}', function($id){
-//     return response()->json([
-//         'message' => 'Usuario actualizado: '. $id
-//     ]);
-// });
-Route::patch('users/{id}', [UserController::class, 'update']);
+// // actualizar registros
+// // Route::put('users/{id}', function($id){
+// //     return response()->json([
+// //         'message' => 'Usuario actualizado: '. $id
+// //     ]);
+// // });
+// Route::patch('users/{id}', [UserController::class, 'update']);
 
-// Route::patch('users/{id}', function($id){
-//     return response()->json([
-//         'message' => 'Usuario actualizado: '. $id
-//     ]);
-// });
-// Route::delete('uses')
-// eliminar registros
-// Route::delete('users/{id}', function($id){
-//     return response()->json([
-//         'message' => 'Usuario eliminado: '. $id
-//     ]); 
-// });
-Route::delete('users/{id}', [UserController::class, 'destroy']);
+// // Route::patch('users/{id}', function($id){
+// //     return response()->json([
+// //         'message' => 'Usuario actualizado: '. $id
+// //     ]);
+// // });
+// // Route::delete('uses')
+// // eliminar registros
+// // Route::delete('users/{id}', function($id){
+// //     return response()->json([
+// //         'message' => 'Usuario eliminado: '. $id
+// //     ]); 
+// // });
+// Route::delete('users/{id}', [UserController::class, 'destroy']);
+
+
+Route::get('users/cursos', function(){
+    return response()->json([
+        'message' => 'Listado de cursos'
+    ]);
+});
+
+
+Route::apiResource('users', UserController::class);
