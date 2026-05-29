@@ -2,6 +2,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\TaskController;
 
 Route::get('/', function () {
     return response()->json([
@@ -67,3 +68,4 @@ Route::get('users/cursos', function(){
 
 
 Route::apiResource('users', UserController::class);
+Route::apiResource('tasks', TaskController::class);
