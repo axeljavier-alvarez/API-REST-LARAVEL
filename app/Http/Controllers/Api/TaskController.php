@@ -31,9 +31,9 @@ class TaskController extends Controller
     /**
      * MUESTRA LA RESPUESTA EN JSON
      */
-   public function show($id)
+   public function show(Task $task)
     {
-        $task = Task::findOrFail($id);
+        // $task = Task::findOrFail($id);
 
         return response()->json($task);
     }
@@ -55,6 +55,16 @@ class TaskController extends Controller
      */
     public function destroy($task)
     {
-        //
+        // return "Registro Eliminado";
+        // $task = Task::find($task);
+        // $task->delete();
+        // return response()->json(null, 204);
+        $task = Task::findOrFail($task);
+        $task->delete();
+        return response()->json([
+            'message' => 'Registro eliminado correctamente'
+        ], 200);
     }
+
+
 }
