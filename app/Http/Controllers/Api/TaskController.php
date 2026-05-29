@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 class TaskController extends Controller
 {
     /**
@@ -13,7 +14,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+        $tasks = Task::paginate();
         return response()->json($tasks);
 
     }
@@ -46,11 +47,11 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $task)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
         // return "Metodo update";
 
-        $task = Task::find($task);
+        // $task = Task::find($task);
         $task->update($request->all());
         return response()->json($task);
     }
