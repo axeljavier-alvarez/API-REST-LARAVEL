@@ -14,9 +14,37 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::paginate();
-        return response()->json($tasks);
+        // return request()->all();
+        // return request('perPage');
+        // crea un builder para task select * from task;
+        $tasks = Task::query();
+        // aplicar filtros
+        if(request('filters')){
+            $filters = request('filters');  
+            foreach($filters as $field => $conditions){
+                foreach($conditions as $operator => $value){
+                    
+                     if(in_array($operator, ['=', '>', '<', '>=', '<=', '!=', 'like'] )){
+                        $tasks->where($field, $operator, $value);
+                     }
 
+                     if($operator == 'like'){
+                        $tasks->where($field, 'like', "%$value%");
+                     }
+                }
+            }
+    
+        }
+
+        // crear consulta
+        if(request('perPage')) {
+            $tasks = $tasks->paginate(request('perPage'));
+        } else {
+            $tasks = $tasks->get();
+        }
+
+        // $tasks = Task::paginate(5);
+        return response()->json($tasks);
     }
 
     /**
