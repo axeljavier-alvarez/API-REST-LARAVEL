@@ -17,7 +17,7 @@ class TaskController extends Controller
         // return request()->all();
         // return request('perPage');
         // crea un builder para task select * from task;
-        $tasks = Task::query();
+        // $tasks = Task::query();
 
         // $tasks = $tasks->with('user');
 
@@ -71,13 +71,10 @@ class TaskController extends Controller
         //     $tasks = $tasks->with($include);
         // }
         // crear consulta
-        if(request('perPage')) {
-            $tasks = $tasks->paginate(request('perPage'));
-        } else {
-            $tasks = $tasks->get();
-        }
+        
 
         // $tasks = Task::paginate(5);
+        $tasks = Task::getOrPaginate();
         return response()->json($tasks);
     }
 

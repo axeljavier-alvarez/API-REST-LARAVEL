@@ -10,14 +10,9 @@ use App\Models\Scopes\SelectScope;
 use App\Models\Scopes\SortScope;
 use App\Models\Scopes\IncludeScope;
 
-#[ScopedBy([
-    FilterScope::class,
-    SelectScope::class,
-    SortScope::class,
-    IncludeScope::class
-])]
 
-class Task extends Model
+
+class Task extends Api
 {
     // protected $table = 'tasks';
     // protected $fillable = [
@@ -28,6 +23,8 @@ class Task extends Model
     protected $guarded = [
         // 'paid'
     ];
+
+    
 
     public function user(){
         return $this->belongsTo(User::class);
