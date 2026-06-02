@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+// JWTSubject convierte el modelo User en autenticable con JWT
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -32,5 +34,16 @@ class User extends Authenticatable
 
     public function tasks(){
         return $this->hasMany(Task::class);
+    }
+
+    // Devuelve el ID del usuario que se guarda dentro del token
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    // Permite agreagr información extra dentro del token
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

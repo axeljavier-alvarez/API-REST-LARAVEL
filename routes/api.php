@@ -3,12 +3,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\AuthController;
 
-Route::get('/', function () {
-    return response()->json([
-        'message' => 'Hola desde la API de laravel'
-    ]);
-});
+// Route::get('/', function () {
+//     return response()->json([
+//         'message' => 'Hola desde la API de laravel'
+//     ]);
+// });
 
 // // listar registros
 
@@ -60,12 +61,17 @@ Route::get('/', function () {
 // Route::delete('users/{id}', [UserController::class, 'destroy']);
 
 
-Route::get('users/cursos', function(){
-    return response()->json([
-        'message' => 'Listado de cursos'
-    ]);
-});
+// Route::get('users/cursos', function(){
+//     return response()->json([
+//         'message' => 'Listado de cursos'
+//     ]);
+// });
 
+
+Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/logout', [AuthController::class, 'logout']);
+Route::post('auth/refresh', [AuthController::class, 'refresh']);
+Route::post('auth/me', [AuthController::class, 'me']);
 
 Route::apiResource('users', UserController::class);
 Route::apiResource('tasks', TaskController::class);
