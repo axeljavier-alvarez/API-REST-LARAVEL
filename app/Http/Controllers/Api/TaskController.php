@@ -18,24 +18,58 @@ class TaskController extends Controller
         // return request('perPage');
         // crea un builder para task select * from task;
         $tasks = Task::query();
-        // aplicar filtros
-        if(request('filters')){
-            $filters = request('filters');  
-            foreach($filters as $field => $conditions){
-                foreach($conditions as $operator => $value){
+
+        // $tasks = $tasks->with('user');
+
+        // // aplicar filtros
+        // if(request('filters')){
+        //     $filters = request('filters');  
+        //     foreach($filters as $field => $conditions){
+        //         foreach($conditions as $operator => $value){
                     
-                     if(in_array($operator, ['=', '>', '<', '>=', '<=', '!=', 'like'] )){
-                        $tasks->where($field, $operator, $value);
-                     }
+        //              if(in_array($operator, ['=', '>', '<', '>=', '<=', '!=', 'like'] )){
+        //                 $tasks->where($field, $operator, $value);
+        //              }
 
-                     if($operator == 'like'){
-                        $tasks->where($field, 'like', "%$value%");
-                     }
-                }
-            }
+        //              if($operator == 'like'){
+        //                 $tasks->where($field, 'like', "%$value%");
+        //              }
+        //         }
+        //     }
     
-        }
+        // }
 
+        // aplicar selects
+        
+        // if(request('select')){
+        //     // return request('select');
+        //     $select = request('select');
+        //     $selectArray = explode(',', $select);
+        //     $tasks->select($selectArray);
+        // }
+
+        // aplicar orden
+        // if(request('sort')){
+        //     $sortFields = explode(',', request('sort'));
+
+        //     foreach($sortFields as $sortField){
+        //         $direction = 'asc';
+        //         if(substr($sortField, 0, 1) == '-'){
+        //             $direction = 'asc';
+        //             $sortField = substr($sortField, 1);
+        //         }
+
+        //         $tasks->orderBy($sortField, $direction); 
+        //     }
+
+        //     // return $sortFields;
+        // }
+
+        // incluir relaciones
+        // if(request('include')){
+        //     $include = explode(',', request('include'));
+        //     $tasks = $tasks->with($include);
+        // }
         // crear consulta
         if(request('perPage')) {
             $tasks = $tasks->paginate(request('perPage'));
