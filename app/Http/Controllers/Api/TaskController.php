@@ -7,8 +7,20 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
-class TaskController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Resources\TaskResource;
+
+class TaskController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api', except: ['index', 'show']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -75,7 +87,8 @@ class TaskController extends Controller
 
         // $tasks = Task::paginate(5);
         $tasks = Task::getOrPaginate();
-        return response()->json($tasks);
+        // return response()->json($tasks);
+        return TaskResource::collection($tasks);
     }
 
     /**
@@ -83,13 +96,19 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
+        // return auth('api')->user();
         // return $request->all();
-        $request->validate([
-            'body' => 'required',
-            'user_id' => ['required', 'exists:users,id']
-        ]);
-        $task =Task::create($request->all());
-        return response()->json($task, 201);
+        // $request->validate([
+        //     'body' => 'required',
+        //     'user_id' => ['required', 'exists:users,id']
+        // ]);
+
+        $data = $request->all();
+        $data['user_id'] = auth('api')->id();
+        $task =Task::create($data);
+
+        return TaskResource::make($task);
+        // return response()->json($task, 201);
 
     }
 
@@ -100,7 +119,9 @@ class TaskController extends Controller
     {
         // $task = Task::findOrFail($id);
 
-        return response()->json($task);
+        // return response()->json($task);
+        // return $task;
+        return TaskResource::make($task); 
     }
 
     /**
@@ -112,7 +133,9 @@ class TaskController extends Controller
 
         // $task = Task::find($task);
         $task->update($request->all());
-        return response()->json($task);
+        // return response()->json($task);
+
+        return TaskResource::make($task);
     }
 
     /**

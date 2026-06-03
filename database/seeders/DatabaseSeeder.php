@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $user =User::factory()->create([
             'name' => 'Victor Arana',
             'email' => 'victor@codersfree.com',
+            'password' => bcrypt('12345678')
         ]);
 
         Task::factory(100)->create([
