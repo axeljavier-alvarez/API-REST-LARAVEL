@@ -41,10 +41,10 @@ class PostController extends Controller implements HasMiddleware
             'is_published' => 'nullable|boolean',
             'category_id' => 'required|exists:categories,id',
         ]);
-
         $data['user_id'] = auth('api')->id();
-        return $data;
-
+        // return $data;
+        $post = Post::create($data);
+        return PostResource::make($post);
     }
 
     /**
@@ -52,7 +52,7 @@ class PostController extends Controller implements HasMiddleware
      */
     public function show(Post $post)
     {
-        //
+        return PostResource::make($post);
     }
 
     /**
@@ -60,14 +60,33 @@ class PostController extends Controller implements HasMiddleware
      */
     public function update(Request $request, Post $post)
     {
-        //
-    }
+        $data = $request->validate([
+            'title' => 'required',
+            'slug' => 'required|unique:posts,slug,' . $post->id,
+            'excerpt' => 'required',
+            'body' => 'required',
+            'image' => 'nullable|image',
+            'is_published' => 'nullable|boolean',
+            'category_id' => 'required|exists:categories,id',
+        ]);
 
+        // 1. Guarda los cambios reales en tu base de datos
+        $post->update($data);
+
+        // 2. Devuelve la respuesta formateada con tu Resource transformado
+        return PostResource::make($post);
+    }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+      
+        return response()->json([
+            'message' => 'Post eliminado correctamente'
+        ]);
+
     }
 }
