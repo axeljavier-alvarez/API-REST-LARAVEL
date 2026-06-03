@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\AuthController;
-
+use App\Http\Controllers\Api\CategoryController;
 // Route::get('/', function () {
 //     return response()->json([
 //         'message' => 'Hola desde la API de laravel'
@@ -78,6 +78,7 @@ Route::post('auth/me', [AuthController::class, 'me']);
 
 Route::apiResource('users', UserController::class);
 Route::apiResource('tasks', TaskController::class);
+Route::apiResource('categories', CategoryController::class);
 
 Route::get('prueba', function(){
     return auth('api')->user();
