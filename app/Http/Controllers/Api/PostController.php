@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\PostResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Storage;
 class PostController extends Controller implements HasMiddleware
 {
 
@@ -41,6 +42,10 @@ class PostController extends Controller implements HasMiddleware
             'is_published' => 'nullable|boolean',
             'category_id' => 'required|exists:categories,id',
         ]);
+
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('images', 'public');
+        }
         $data['user_id'] = auth('api')->id();
         // return $data;
         $post = Post::create($data);
@@ -70,6 +75,14 @@ class PostController extends Controller implements HasMiddleware
             'category_id' => 'required|exists:categories,id',
         ]);
 
+        if($request->hasFile('image')){
+            // Eliminar la imagen anterior si existe
+            if($post->image_path){
+                Storage::delete($post->image_path);
+            }
+            // $data['image_path'] = Storage::put('images', $request->file('image'));
+            $data['image_path'] = $request->file('image')->store('images', 'public');
+        }
         // 1. Guarda los cambios reales en tu base de datos
         $post->update($data);
 
