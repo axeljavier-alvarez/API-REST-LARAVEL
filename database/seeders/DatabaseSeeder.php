@@ -9,6 +9,8 @@ use App\Models\Task;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use Spatie\Permission\Models\Role;
+
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
@@ -35,5 +37,14 @@ class DatabaseSeeder extends Seeder
         Post::factory(100)->create();
 
         Tag::factory(10)->create();
+
+        $this->call([
+            PermissionSeeder::class,
+            RoleSeeder::class
+        ]);
+
+        // $user->assignRole('admin');
+        $user->roles()->attach(1);
+         
     }
 }
