@@ -6,14 +6,28 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use App\Http\Resources\PermissionResource;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+        {
+            return [
+                new Middleware('auth:api'),
+            ];
+        }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+                Gate::authorize('permissions.index', 'api');
+
+
         $permissions = Permission::all();
         return PermissionResource::collection($permissions);
 
@@ -24,6 +38,10 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
+
+        Gate::authorize('permissions.store', 'api');
+
+
         $data = $request->validate([
             'name' => 'required|unique:permissions,name',
         ]);
@@ -41,6 +59,8 @@ class PermissionController extends Controller
      */
     public function show(Permission $permission)
     {
+                Gate::authorize('permissions.show', 'api');
+
         return PermissionResource::make($permission);
     }
 
@@ -49,8 +69,12 @@ class PermissionController extends Controller
      */
     public function update(Request $request, Permission $permission)
     {
+        Gate::authorize('permissions.update', 'api');
+
+
         $data = $request->validate([
            'name' => 'required|unique:permissions,name,'.$permission->id,
+
         ]);
 
         $permission->update($data);
@@ -62,6 +86,10 @@ class PermissionController extends Controller
      */
     public function destroy(Permission $permission)
     {
+
+        Gate::authorize('permissions.destroy', 'api');
+
+
         $permission->delete();
 
         return response()->json([
