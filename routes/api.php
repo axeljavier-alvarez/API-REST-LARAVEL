@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\PermissionController;
 // Route::get('/', function () {
 //     return response()->json([
 //         'message' => 'Hola desde la API de laravel'
@@ -80,7 +81,9 @@ Route::post('auth/me', [AuthController::class, 'me']);
 Route::apiResource('users', UserController::class);
 Route::apiResource('tasks', TaskController::class);
 Route::apiResource('categories', CategoryController::class);
-Route::apiResource('posts', PostController::class);
+
+
+Route::apiResource('permissions', PermissionController::class);
 
 Route::post('posts/{post}/tags', [PostController::class, 'syncTags']);
 Route::apiResource('posts', PostController::class);
