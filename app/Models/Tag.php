@@ -10,5 +10,10 @@ class Tag extends Api
     /** @use HasFactory<\Database\Factories\TagFactory> */
     use HasFactory;
 
-    protected $fillable = ['name'];
+    
+    public function posts()
+{
+    return $this->belongsToMany(Post::class)
+        ->withTimestamps();
+}
 }

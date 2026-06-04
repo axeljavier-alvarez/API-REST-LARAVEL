@@ -10,6 +10,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Gate;
 class PostController extends Controller implements HasMiddleware
 {
 
@@ -54,7 +55,8 @@ class PostController extends Controller implements HasMiddleware
     }
     public function syncTags(Request $request, Post $post)
     {
-        $data = $request->validate([
+        Gate::authorize('author', $post);
+        $request->validate([
             'tags' => 'required|array|min:1'
         ]);
 
@@ -87,6 +89,9 @@ class PostController extends Controller implements HasMiddleware
      */
     public function update(Request $request, Post $post)
     {
+        Gate::authorize('author', $post);
+        // return "Paso validación";
+
         $data = $request->validate([
             'title' => 'required',
             'slug' => 'required|unique:posts,slug,' . $post->id,
@@ -116,6 +121,8 @@ class PostController extends Controller implements HasMiddleware
      */
     public function destroy(Post $post)
     {
+
+        Gate::authorize('author', $post);
         $post->delete();
 
       
