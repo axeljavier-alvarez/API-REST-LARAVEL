@@ -82,6 +82,8 @@ Route::apiResource('tasks', TaskController::class);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('posts', PostController::class);
 
+Route::post('posts/{post}/tags', [PostController::class, 'syncTags']);
+Route::apiResource('posts', PostController::class);
 Route::get('prueba', function(){
     return auth('api')->user();
 });

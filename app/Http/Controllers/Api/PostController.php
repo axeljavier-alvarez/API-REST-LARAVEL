@@ -9,6 +9,7 @@ use App\Http\Resources\PostResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Tag;
 class PostController extends Controller implements HasMiddleware
 {
 
@@ -50,6 +51,27 @@ class PostController extends Controller implements HasMiddleware
         // return $data;
         $post = Post::create($data);
         return PostResource::make($post);
+    }
+    public function syncTags(Request $request, Post $post)
+    {
+        $data = $request->validate([
+            'tags' => 'required|array|min:1'
+        ]);
+
+        $tags =[];
+
+        foreach($request->tags as $tag){
+            $tags[] = Tag::firstOrCreate([
+                'name' => $tag,
+            ])->id;
+        }
+
+        $post->tags()->sync($tags);
+        // cargue las relaciones
+        $post->load('tags');
+        return PostResource::make($post);
+
+        // return $tags;
     }
 
     /**

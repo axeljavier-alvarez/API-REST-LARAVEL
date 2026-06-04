@@ -27,4 +27,11 @@ class Post extends Api
         'is_published' => 'boolean',
         'published_at' => 'datetime',
     ];
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class)
+        ->withTimestamps();
+
+    } 
 }
