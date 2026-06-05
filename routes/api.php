@@ -8,69 +8,12 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
-// Route::get('/', function () {
-//     return response()->json([
-//         'message' => 'Hola desde la API de laravel'
-//     ]);
-// });
+use App\Http\Controllers\Api\DesarrolloSocial\SolicitudController;
 
-// // listar registros
-
-// // Route::get('users', function(){
-// //     return response()->json([
-// //         'message' => 'Listado de usuarios'
-// //     ]);
-// // });
-
-// Route::get('users', [UserController::class, 'index']);
-
-// // crear registros
-// // Route::post('users', function(){
-// //     return response()->json([
-// //         'message' => 'Usuario creado'
-// //     ]);
-// // });
-
-// Route::post('users', [UserController::class, 'store']);
-// // recuperar registros
-// // Route::get('users/{id}', function($id){
-// //     return response()->json([
-// //         'message' => 'Usuario recuperado: '. $id
-// //     ]);
-// // });
-// Route::get('users/{id}', [UserController::class, 'show']);
+// ruta nueva
+Route::apiResource('solicitudes', SolicitudController::class);
 
 
-// // actualizar registros
-// // Route::put('users/{id}', function($id){
-// //     return response()->json([
-// //         'message' => 'Usuario actualizado: '. $id
-// //     ]);
-// // });
-// Route::patch('users/{id}', [UserController::class, 'update']);
-
-// // Route::patch('users/{id}', function($id){
-// //     return response()->json([
-// //         'message' => 'Usuario actualizado: '. $id
-// //     ]);
-// // });
-// // Route::delete('uses')
-// // eliminar registros
-// // Route::delete('users/{id}', function($id){
-// //     return response()->json([
-// //         'message' => 'Usuario eliminado: '. $id
-// //     ]); 
-// // });
-// Route::delete('users/{id}', [UserController::class, 'destroy']);
-
-
-// Route::get('users/cursos', function(){
-//     return response()->json([
-//         'message' => 'Listado de cursos'
-//     ]);
-// });
-
-// registrar
 Route::post('auth/register', [AuthController::class, 'register']);
 
 

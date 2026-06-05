@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DesarrolloSocial\Solicitud;
 use App\Http\Resources\DesarrolloSocial\SolicitudResource;
+use Illuminate\Support\Facades\DB;
 
 class SolicitudController extends Controller
 {
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'anio' => 'required',
             'nombres' => 'required|string|max:60',
             'apellidos' => 'required|string|max:60',
             'email' => 'required|email|max:45',
@@ -28,14 +28,20 @@ class SolicitudController extends Controller
             'email.email' => 'El formato del correo no es valido'
         ]);
 
-      $validatedData['no_solicitud'] = 'SOL-' . $validatedData['anio'] . '-' . rand(1000, 9999);
+        $validatedData['anio'] = date('Y');
 
-      // 3. Crear el registro en la base de datos de Desarrollo Social
-        $solicitud = Solicitud::create($validatedData);
+        $solicitud = DB::transaction(function() use ($validatedData){
+            $solicitud = Solicitud::create($validatedData);
 
-        // 4. Responder con el Resource y un estado 201 (Creado)
-        return (new SolicitudResource($solicitud))
-            ->response()
-            ->setStatusCode(201);
+            $solicitud->update([
+                'no_solicitud' => $solicitud->id . '-' . $solicitud->anio
+            ]);
+
+            return $solicitud;
+        });
+
+        return (new SolicitudResource($solicitud->fresh()))
+        ->response()
+        ->setStatusCode(201);
     }
 }
