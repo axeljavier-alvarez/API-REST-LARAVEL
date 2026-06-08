@@ -40,7 +40,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             PermissionSeeder::class,
-            RoleSeeder::class
+            RoleSeeder::class,
+            RequisitoSeeder::class, 
+            TramiteSeeder::class,
+            RequisitoTramiteSeeder::class
         ]);
 
         // $user->assignRole('admin');

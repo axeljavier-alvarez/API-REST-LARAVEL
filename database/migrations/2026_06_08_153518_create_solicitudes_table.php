@@ -13,16 +13,19 @@ return new class extends Migration
     {
         Schema::create('solicitudes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('estado_id')->constrained('estados')->onDelete('cascade');
             $table->string('no_solicitud', 15)->nullable();
             $table->integer('anio');
             $table->string('nombres', 60);
             $table->string('apellidos', 60);
-            $table->string('email', 45);
+            $table->string('email', 45)->unique();
             $table->string('telefono', 20);
             $table->string('cui', 13);
             $table->string('domicilio', 255);
             $table->string('observaciones',500)->nullable();
             $table->string('razon', 255)->nullable();
+            $table->integer('zona');
+            $table->foreignId('tramite_id')->constrained('tramites')->restrictOnDelete();
             $table->timestamps();
         });
     }
