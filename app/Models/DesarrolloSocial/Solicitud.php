@@ -19,6 +19,31 @@ class Solicitud extends Model
         'cui',
         'domicilio',
         'observaciones',
-        'razon'
+        'estado_id',
+        'razon',
+        'tramite_id',
     ];
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'estado_id');
+    }
+
+    public function detallesSolicitudes()
+    {
+        return $this->hasMany(
+            DetalleSolicitud::class, 'solicitud_id'
+        );
+    }
+
+    public function bitacoras(){
+        return $this->hasMany(Bitacora::class, 'solicitud_id');
+    }
+
+    public function tramite()
+    {
+        return $this->belongsTo(Tramite::class);
+    }
+
+    
 }

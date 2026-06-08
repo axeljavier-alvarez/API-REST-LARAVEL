@@ -43,7 +43,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             RequisitoSeeder::class, 
             TramiteSeeder::class,
-            RequisitoTramiteSeeder::class
+            RequisitoTramiteSeeder::class,
+            EstadoSeeder::class
         ]);
 
         // $user->assignRole('admin');
