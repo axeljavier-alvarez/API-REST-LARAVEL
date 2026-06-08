@@ -22,6 +22,7 @@ class Solicitud extends Model
         'estado_id',
         'razon',
         'tramite_id',
+        'zona'
     ];
 
     public function estado()

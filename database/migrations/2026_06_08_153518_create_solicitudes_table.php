@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('apellidos', 60);
             $table->string('email', 45)->unique();
             $table->string('telefono', 20);
-            $table->string('cui', 13);
+            $table->string('cui', 13)->unique();
             $table->string('domicilio', 255);
             $table->string('observaciones',500)->nullable();
             $table->string('razon', 255)->nullable();

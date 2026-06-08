@@ -26,6 +26,9 @@ class SolicitudResource extends JsonResource
             'domicilio' => $this->domicilio,
             'observaciones' => $this->observaciones,
             'razon' => $this->razon,
+            'zona' => $this->zona,
+            'tramite_id'    => $this->tramite_id,
+            'estado_id'     => $this->estado_id,
             'created_at' => $this->created_at,
         ];
     }
