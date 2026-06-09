@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\DesarrolloSocial\SolicitudController;
 use App\Http\Controllers\Api\DesarrolloSocial\TramiteController;
 // ruta nueva
+Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);
 Route::apiResource('tramites', TramiteController::class);
 
