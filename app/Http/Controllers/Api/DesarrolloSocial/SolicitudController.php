@@ -16,13 +16,15 @@ class SolicitudController extends Controller
     public array $validationRules = [
         'nombres'       => 'required|string|max:255',
         'apellidos'     => 'required|string|max:255',
-        'email'         => 'nullable|email|max:255|unique:solicitudes,email',
-        'telefono'      => 'required|string',
+        'email'         => 'required|email|max:255|unique:solicitudes,email',
+        'telefono'      => 'required|string|min:8',
         'domicilio'     => 'required|string',
         'observaciones' => 'nullable|string',
-        'razon'         => 'nullable|string',
+        'razon'         => 'required|string',
         'zona'          => 'required|integer',
         'tramite_id'    => 'required|integer',
+        'cui'           => 'required|integer',
+
     ];
 
     public array $validationMessages = [
@@ -31,6 +33,7 @@ class SolicitudController extends Controller
         'email.email'         => 'El formato del correo electrónico no es válido.',
         'email.unique'        => 'Este correo electrónico ya tiene una solicitud registrada.',
         'telefono.required'   => 'El número de teléfono es obligatorio.',
+        'telefono.min'   => 'El número de teléfono debe contener 8 caracteres.',
         'domicilio.required'  => 'La dirección de domicilio es obligatoria.',
         'zona.required'       => 'Debes especificar la zona.',
         'tramite_id.required' => 'El tipo de trámite es obligatorio.',

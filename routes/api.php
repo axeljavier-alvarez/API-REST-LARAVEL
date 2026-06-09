@@ -9,10 +9,10 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\DesarrolloSocial\SolicitudController;
-
+use App\Http\Controllers\Api\DesarrolloSocial\TramiteController;
 // ruta nueva
 Route::apiResource('solicitudes', SolicitudController::class);
-
+Route::apiResource('tramites', TramiteController::class);
 
 Route::post('auth/register', [AuthController::class, 'register']);
 
