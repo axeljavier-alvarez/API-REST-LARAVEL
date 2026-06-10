@@ -23,11 +23,11 @@ class SolicitudStoreRequest extends FormRequest
     {
         $rules = [
             1 => [
-                'nombres'   => 'required|string|max:255',
-                'apellidos' => 'required|string|max:255',
-                'email'     => 'required|email|max:255',
+                'nombres'   => 'required|string|max:60',
+                'apellidos' => 'required|string|max:60',
+                'email' => 'required|email|unique:solicitudes,email|max:45',
                 'telefono'  => 'required|numeric|digits_between:8,15',
-                'domicilio' => 'required|string|max:500',
+                'domicilio' => 'required|string|max:255',
                 'zona'      => 'required|integer',
                 'cui' => [
                     'required',
@@ -79,6 +79,7 @@ class SolicitudStoreRequest extends FormRequest
             'apellidos.required'   => 'El apellido es requerido.',
             'email.required'       => 'El correo electrónico es requerido.',
             'email.email'          => 'El formato del correo electrónico no es válido.',
+            'email.unique' => 'El correo ya fue registrado',
             'telefono.required'    => 'El teléfono es requerido.',
             'telefono.numeric'     => 'El teléfono debe contener solo números.',
             'cui.required'         => 'El DPI (CUI) es requerido.',
