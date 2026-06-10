@@ -14,52 +14,6 @@ use Illuminate\Http\JsonResponse;
 
 class SolicitudController extends Controller
 {
-
-    // public array $validationRules = [
-    //     'nombres'       => 'required|string|max:60',
-    //     'apellidos'     => 'required|string|max:60',
-    //     'email'         => 'required|email|max:45|unique:solicitudes,email',
-    //     'telefono'      => 'required|string|min:8',
-    //     'domicilio'     => 'required|string',
-    //     'observaciones' => 'nullable|string',
-    //     'razon'         => 'required|string',
-    //     'zona'          => 'required|integer',
-    //     'tramite_id'    => 'required|integer',
-    //     'cui'           => 'required|integer',
-
-    // ];
-
-    // public array $validationMessages = [
-    //     'nombres.required'    => 'Por favor, ingresa los nombres del solicitante.',
-    //     'apellidos.required'  => 'Por favor, ingresa los apellidos del solicitante.',
-    //     'email.email'         => 'El formato del correo electrónico no es válido.',
-    //     'email.unique'        => 'Este correo electrónico ya tiene una solicitud registrada.',
-    //     'telefono.required'   => 'El número de teléfono es obligatorio.',
-    //     'telefono.min'   => 'El número de teléfono debe contener 8 caracteres.',
-    //     'domicilio.required'  => 'La dirección de domicilio es obligatoria.',
-    //     'zona.required'       => 'Debes especificar la zona.',
-    //     'tramite_id.required' => 'El tipo de trámite es obligatorio.',
-    //     'cui.required'        => 'El número de CUI es obligatorio.',
-    //     'cui.unique'          => 'Este número de CUI ya tiene una solicitud registrada.', 
-    // ];
-
-    // public function getRules(): array
-    // {
-    //     $rules = $this->validationRules;
-    //     $rules['cui'] = [
-    //         'required',
-    //         'string',
-    //         'max:13',
-    //         'unique:solicitudes,cui',
-    //         function ($attribute, $value, $fail) {
-    //             if (!$this->cuiEsValido($value)) {
-    //                 $fail('El número de CUI ingresado no es válido para Guatemala.');
-    //             }
-    //         },
-    //     ];
-
-    //     return $rules;
-    // }
     public function validarPaso(SolicitudStoreRequest $request): JsonResponse
     {
         return response()->json([
@@ -69,11 +23,6 @@ class SolicitudController extends Controller
 
     public function store(SolicitudStoreRequest $request)
     {
-        // $validator = Validator::make($request->all(), $this->getRules(), $this->validationMessages);
-        // if ($validator->fails()) {
-        //     return response()->json(['errors' => $validator->errors()], 422);
-        // }
-
         try {
             DB::beginTransaction();
             $nombres = mb_convert_case(trim($request->nombres), MB_CASE_TITLE, "UTF-8");
