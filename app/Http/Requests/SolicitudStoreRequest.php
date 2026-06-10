@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Override;
+use App\Models\DesarrolloSocial\Tramite;
 
 class SolicitudStoreRequest extends FormRequest
 {
@@ -60,6 +60,14 @@ class SolicitudStoreRequest extends FormRequest
     {
         // Si desde Vue mandamos el parámetro 'step', solo validamos ese paso.
         if ($this->has('step')) {
+            $rules = $this->rulesByStep((int) $this->input('step'));
+            if((int) $this->input('step') === 2 && $this->tramite_id){
+                $tramite = Tramite::with('requisitos')
+                ->find($this->tramite_id);
+                if($tramite){
+                    
+                }
+            }
             return $this->rulesByStep((int) $this->input('step'));
         }
 

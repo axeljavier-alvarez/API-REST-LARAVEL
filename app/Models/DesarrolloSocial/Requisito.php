@@ -16,7 +16,7 @@ class Requisito extends Model
     {
         return $this->belongsToMany(
             Tramite::class,
-            'requisito_tramite',
+            'requisitos_tramites',
             'requisito_id',
             'tramite_id'
         );
