@@ -27,7 +27,16 @@ class SolicitudResource extends JsonResource
             'observaciones' => $this->observaciones,
             'razon' => $this->razon,
             'zona' => $this->zona,
-            'tramite_id'    => $this->tramite_id,
+            'tramite' => [
+                'id' => $this->tramite?->id,
+                'nombre' => $this->tramite?->nombre,
+                'requisitos' => $this->tramite?->requisitos->map(function ($requisito){
+                    return [
+                        'id' => $requisito->id,
+                        'nombre' => $requisito->nombre
+                    ];
+                })
+            ],
             'estado_id'     => $this->estado_id,
             'created_at' => $this->created_at,
         ];

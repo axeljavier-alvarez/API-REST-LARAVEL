@@ -17,7 +17,7 @@ class TramiteResource extends JsonResource
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
-            'requsitos' => $this->requisitos
+            'requisitos' => $this->requisitos
         ];
     }
 }

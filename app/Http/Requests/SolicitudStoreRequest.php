@@ -17,8 +17,6 @@ class SolicitudStoreRequest extends FormRequest
     {
         return true;
     }
-
-
     public function rulesByStep(int $step): array
     {
         $rules = [
@@ -34,8 +32,8 @@ class SolicitudStoreRequest extends FormRequest
                     'string',
                     'digits:13',
                     'unique:solicitudes,cui,' . ($this->solicitud?->id ?? 'NULL'),
-                    function($attribute, $value, $fail){
-                        if(!$this->cuiEsValido($value)){
+                    function ($attribute, $value, $fail) {
+                        if (!$this->cuiEsValido($value)) {
                             $fail('El número de CUI no es válido');
                         }
                     }
@@ -58,31 +56,67 @@ class SolicitudStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Si desde Vue mandamos el parámetro 'step', solo validamos ese paso.
         if ($this->has('step')) {
+
             $rules = $this->rulesByStep((int) $this->input('step'));
-            if((int) $this->input('step') === 2 && $this->tramite_id){
+
+            // Si estamos validando el paso 2
+            if ((int) $this->input('step') === 2 && $this->tramite_id) {
+
                 $tramite = Tramite::with('requisitos')
-                ->find($this->tramite_id);
-                if($tramite){
-                    
+                    ->find($this->tramite_id);
+
+                if ($tramite) {
+
+                    foreach ($tramite->requisitos as $requisito) {
+
+                        $campo = 'requisito_' . $requisito->id;
+
+                        $rules[$campo] = [
+                            'required',
+                            'file',
+                            'mimes:pdf,jpg,jpeg,png',
+                            'max:2048'
+                        ];
+                    }
                 }
             }
-            return $this->rulesByStep((int) $this->input('step'));
+
+            return $rules;
         }
 
-        // Si no viene 'step' (es el submit final), unimos y validamos TODOS los pasos de golpe.
-        return array_merge(
+        $rules = array_merge(
             $this->rulesByStep(1),
             $this->rulesByStep(2),
             $this->rulesByStep(3)
         );
+
+        if ($this->tramite_id) {
+
+            $tramite = Tramite::with('requisitos')
+                ->find($this->tramite_id);
+
+            if ($tramite) {
+
+                foreach ($tramite->requisitos as $requisito) {
+
+                    $campo = 'requisito_' . $requisito->id;
+
+                    $rules[$campo] = [
+                        'required',
+                        'file',
+                        'mimes:pdf,jpg,jpeg,png',
+                        'max:2048'
+                    ];
+                }
+            }
+        }
+
+        return $rules;
     }
-
-
     public function messages(): array
     {
-        return [
+        $messages = [
             'nombres.required'     => 'El nombre es requerido.',
             'apellidos.required'   => 'El apellido es requerido.',
             'email.required'       => 'El correo electrónico es requerido.',
@@ -100,15 +134,34 @@ class SolicitudStoreRequest extends FormRequest
             'tramite_id.required'  => 'Debe seleccionar un tipo de trámite.',
             'tramite_id.exists'    => 'El trámite seleccionado no es válido.',
         ];
-    }
 
+        if ($this->tramite_id) {
+            $tramite = Tramite::with('requisitos')
+                ->find($this->tramite_id);
+            if ($tramite) {
+                foreach ($tramite->requisitos as $requisito) {
+                    $campo = 'requisito_' . $requisito->id;
+                    $messages["{$campo}.required"] =
+                        "Debe adjuntar {$requisito->nombre}.";
+                    $messages["{$campo}.file"] =
+                        "{$requisito->nombre} debe ser un archivo válido.";
+                    $messages["{$campo}.mimes"] =
+                        "{$requisito->nombre} debe ser PDF, JPG o PNG";
+
+                    $messages["{$campo}.max"] =
+                        "{$requisito->nombre} no debe superar los 2 MB.";
+                }
+            }
+        }
+
+        return $messages;
+    }
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors()
         ], 422));
     }
-
     private function cuiEsValido(string $cui): bool
     {
         $cui = preg_replace('/[^0-9]/', '', $cui);
@@ -131,6 +184,4 @@ class SolicitudStoreRequest extends FormRequest
 
         return ($total % 11) === $verificador;
     }
-
-
 }
