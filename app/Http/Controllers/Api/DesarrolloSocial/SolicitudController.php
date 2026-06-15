@@ -16,8 +16,6 @@ class SolicitudController extends Controller
 {
     public function validarPaso(SolicitudStoreRequest $request): JsonResponse
     {
-
-    
         return response()->json([
             'message' => 'Paso ' . $request->input('step') . ' válido.'
         ], 200);
