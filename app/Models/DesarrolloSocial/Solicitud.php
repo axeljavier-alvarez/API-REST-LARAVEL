@@ -47,4 +47,6 @@ class Solicitud extends Model
     }
 
     
+
+    
 }

@@ -64,4 +64,30 @@ class SolicitudController extends Controller
                 'error' => $th->getMessage()], 500);
         }
     }
+
+    public function consultar(Request $request)
+    {
+        $request->validate([
+            'cui' => 'required|string',
+            'no_solicitud' => 'required|string'
+        ]);
+
+        // laravel hace consultas optimizadas
+        $solicitud = Solicitud::with([
+            'tramite.requisitos',
+            'estado'
+        ])
+        ->where('cui', $request->cui)
+        ->where('no_solicitud', $request->no_solicitud)
+        ->first();
+
+        if(!$solicitud){
+            return response()->json([
+                'message' => 'Solicitud no encontrada'
+            ], 404);
+        }
+
+        return new SolicitudResource($solicitud);
+
+    }
 }

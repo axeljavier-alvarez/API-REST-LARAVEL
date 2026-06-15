@@ -37,6 +37,10 @@ class SolicitudResource extends JsonResource
                     ];
                 })
             ],
+            'estado' => [
+                'id' => $this->estado?->id,
+                'nombre' => $this->estado?->nombre
+            ],
             'estado_id'     => $this->estado_id,
             'created_at' => $this->created_at,
         ];

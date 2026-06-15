@@ -10,14 +10,16 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\DesarrolloSocial\SolicitudController;
 use App\Http\Controllers\Api\DesarrolloSocial\TramiteController;
+use App\Models\DesarrolloSocial\Solicitud;
+
 // ruta nueva
 Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);
 Route::apiResource('tramites', TramiteController::class);
+Route::post('solicitudes/consultar', [SolicitudController::class, 'consultar']);
+
 
 Route::post('auth/register', [AuthController::class, 'register']);
-
-
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('auth/logout', [AuthController::class, 'logout']);
 Route::post('auth/refresh', [AuthController::class, 'refresh']);
