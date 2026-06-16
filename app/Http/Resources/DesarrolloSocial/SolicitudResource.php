@@ -27,22 +27,24 @@ class SolicitudResource extends JsonResource
             'observaciones' => $this->observaciones,
             'razon' => $this->razon,
             'zona' => $this->zona,
-            'tramite' => [
-                'id' => $this->tramite?->id,
-                'nombre' => $this->tramite?->nombre,
-                'requisitos' => $this->tramite?->requisitos->map(function ($requisito){
-                    return [
-                        'id' => $requisito->id,
-                        'nombre' => $requisito->nombre
-                    ];
-                })
-            ],
-            'estado' => [
-                'id' => $this->estado?->id,
-                'nombre' => $this->estado?->nombre
-            ],
+            'tramite' => new TramiteResource($this->whenLoaded('tramite')), 
+            // 'tramite' => [
+            //     'id' => $this->tramite?->id,
+            //     'nombre' => $this->tramite?->nombre,
+            //     'requisitos' => $this->tramite?->requisitos->map(function ($requisito){
+            //         return [
+            //             'id' => $requisito->id,
+            //             'nombre' => $requisito->nombre
+            //         ];
+            //     })
+            // ],
+            // 'estado' => [
+            //     'id' => $this->estado?->id,
+            //     'nombre' => $this->estado?->nombre
+            // ],
+            'estado' => new EstadoResource($this->estado),
             'estado_id'     => $this->estado_id,
-            'created_at' => $this->created_at,
+            'created_at'    => $this->created_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

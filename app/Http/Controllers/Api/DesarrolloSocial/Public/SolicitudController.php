@@ -1,7 +1,5 @@
 <?php
-
-namespace App\Http\Controllers\Api\DesarrolloSocial;
-
+namespace App\Http\Controllers\Api\DesarrolloSocial\Public;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DesarrolloSocial\Solicitud;

@@ -5,19 +5,21 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\DesarrolloSocial\Admin\AdminEstadoController;
+use App\Http\Controllers\Api\DesarrolloSocial\Admin\AdminTramiteController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\DesarrolloSocial\SolicitudController;
-use App\Http\Controllers\Api\DesarrolloSocial\TramiteController;
-use App\Models\DesarrolloSocial\Solicitud;
+use App\Http\Controllers\Api\DesarrolloSocial\Public\SolicitudController;
+use App\Http\Controllers\Api\DesarrolloSocial\Public\TramiteController;
 
+Route::apiResource('tramitesDashboard', AdminTramiteController::class)->only(['index']);
+Route::apiResource('estadosDashboard', AdminEstadoController::class)->only(['index']);
 // ruta nueva
 Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);
 Route::apiResource('tramites', TramiteController::class);
 Route::post('solicitudes/consultar', [SolicitudController::class, 'consultar']);
-
 
 Route::post('auth/register', [AuthController::class, 'register']);
 Route::post('auth/login', [AuthController::class, 'login']);

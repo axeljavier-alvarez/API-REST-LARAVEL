@@ -12,7 +12,6 @@ class Tramite extends Model
     protected $fillable = ['nombre'];
     public $timestamps = false;
 
-
     public function requisitos()
     {
         return $this->belongsToMany(
@@ -20,7 +19,15 @@ class Tramite extends Model
             'requisitos_tramites',
             'tramite_id',
             'requisito_id'
-    );
+        );
     }
 
+    // 🌟 AGREGA ESTA FUNCIÓN QUE FALTA:
+    // Un trámite tiene muchas solicitudes asociadas
+    public function solicitudes()
+    {
+        return $this->hasMany(
+            Solicitud::class, 'tramite_id'
+        );
+    }
 }
