@@ -12,9 +12,14 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\DesarrolloSocial\Public\SolicitudController;
 use App\Http\Controllers\Api\DesarrolloSocial\Public\TramiteController;
+use App\Http\Controllers\Api\DesarrolloSocial\Admin\AdminSolicitudController;
 
 Route::apiResource('tramitesDashboard', AdminTramiteController::class)->only(['index']);
 Route::apiResource('estadosDashboard', AdminEstadoController::class)->only(['index']);
+Route::apiResource(
+    'solicitudesDashboard',
+    AdminSolicitudController::class
+)->only(['index']);
 // ruta nueva
 Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);
