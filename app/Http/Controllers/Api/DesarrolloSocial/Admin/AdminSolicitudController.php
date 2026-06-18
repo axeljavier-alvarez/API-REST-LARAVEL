@@ -31,4 +31,26 @@ class AdminSolicitudController extends Controller implements HasMiddleware
 
         return SolicitudResource::collection($solicitudes);
     }
+
+    public function analisis()
+    {
+        $solicitudes = Solicitud::query()
+        ->with([
+            'tramite',
+            'estado'
+        ])
+        ->whereHas('estado', function($query){
+            $query->whereIn('nombre', [
+                'Pendiente',
+                'Analisis',
+                'Visita asignada',
+                'Visita realizada'
+            ]);
+        })
+        ->latest()
+        ->paginate(15);
+        return SolicitudResource::collection(
+            $solicitudes
+        );
+    }
 }

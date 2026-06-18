@@ -20,6 +20,10 @@ Route::apiResource(
     'solicitudesDashboard',
     AdminSolicitudController::class
 )->only(['index']);
+Route::get(
+    'solicitudesAnalisis',
+    [AdminSolicitudController::class, 'analisis']
+);
 // ruta nueva
 Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);
