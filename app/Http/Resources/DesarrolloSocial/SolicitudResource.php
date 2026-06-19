@@ -28,21 +28,10 @@ class SolicitudResource extends JsonResource
             'razon' => $this->razon,
             'zona' => $this->zona,
             'tramite' => new TramiteResource($this->whenLoaded('tramite')), 
-            // 'tramite' => [
-            //     'id' => $this->tramite?->id,
-            //     'nombre' => $this->tramite?->nombre,
-            //     'requisitos' => $this->tramite?->requisitos->map(function ($requisito){
-            //         return [
-            //             'id' => $requisito->id,
-            //             'nombre' => $requisito->nombre
-            //         ];
-            //     })
-            // ],
-            // 'estado' => [
-            //     'id' => $this->estado?->id,
-            //     'nombre' => $this->estado?->nombre
-            // ],
             'estado' => new EstadoResource($this->estado),
+            'bitacoras' => BitacoraResource::collection(
+                  $this->whenLoaded('bitacoras')
+            ),
             'estado_id'     => $this->estado_id,
             'created_at'    => $this->created_at?->format('Y-m-d H:i:s'),
         ];

@@ -24,7 +24,8 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         $solicitudes = Solicitud::query()
         ->with([
             'tramite',
-            'estado'
+            'estado',
+            'bitacoras.user'
         ])
         ->latest()
         ->paginate(15);
@@ -37,7 +38,8 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         $solicitudes = Solicitud::query()
         ->with([
             'tramite',
-            'estado'
+            'estado',
+            'bitacoras.user'
         ])
         ->whereHas('estado', function($query){
             $query->whereIn('nombre', [
