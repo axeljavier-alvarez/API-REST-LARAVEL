@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\DesarrolloSocial\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DesarrolloSocial\SolicitudResource;
 use App\Models\DesarrolloSocial\Solicitud;
+
+use App\Http\Resources\DesarrolloSocial\Admin\SolicitudResourceAdmin;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Override;
@@ -27,6 +29,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             'estado',
             'bitacoras.user'
         ])
+        
         ->latest()
         ->paginate(15);
 
@@ -39,7 +42,8 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         ->with([
             'tramite',
             'estado',
-            'bitacoras.user'
+            'bitacoras.user',
+            'detallesSolicitudes.requisitoTramite.requisito'
         ])
         ->whereHas('estado', function($query){
             $query->whereIn('nombre', [
@@ -51,7 +55,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         })
         ->latest()
         ->paginate(15);
-        return SolicitudResource::collection(
+        return SolicitudResourceAdmin::collection(
             $solicitudes
         );
     }

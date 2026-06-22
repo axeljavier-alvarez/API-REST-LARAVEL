@@ -8,7 +8,7 @@ use App\Models\User;
 class DetalleSolicitud extends Model
 {
     use HasFactory;
-    protected $table = 'detalles_solicitudes';
+    protected $table = 'detalle_solicitudes';
     protected $fillable = [
         'path',
         'tipo',

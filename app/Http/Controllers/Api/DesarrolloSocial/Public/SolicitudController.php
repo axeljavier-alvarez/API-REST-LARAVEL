@@ -9,6 +9,9 @@ use App\Models\DesarrolloSocial\Bitacora;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\SolicitudStoreRequest;
 use Illuminate\Http\JsonResponse;
+use App\Models\DesarrolloSocial\DetalleSolicitud;
+use App\Models\DesarrolloSocial\RequisitoTramite;
+use App\Models\DesarrolloSocial\Tramite;
 
 class SolicitudController extends Controller
 {
@@ -49,6 +52,34 @@ class SolicitudController extends Controller
                 'evento' => 'CREACIÓN',
                 'descripcion'  => 'Solicitud creada exitosamente desde el formulario.',
             ]);
+
+            $tramite = Tramite::with('requisitos')
+            ->findOrFail($request->tramite_id);
+
+            foreach($tramite->requisitos as $requisito){
+                $campo = 'requisito_' . $requisito->id;
+                if ($request->hasFile($campo)){
+                    $archivo = $request->file($campo);
+                    // guardar archivo
+                    $path = $archivo->store(
+                        'solicitudes/' . $solicitud->id,
+                        'public'
+                    );
+                    // buscar relación pivote
+                    $requisitoTramite = RequisitoTramite::where('tramite_id', $tramite->id)
+                    ->where('requisito_id', $requisito->id)
+                    ->first();
+
+                    // creando detalle
+                    DetalleSolicitud::create([
+                       'path' => $path,
+                       'tipo' => $archivo->getClientOriginalExtension(),
+                       'solicitud_id' => $solicitud->id,
+                       'user_id' => null,
+                       'requisito_tramite_id' => $requisitoTramite?->id
+                    ]);
+                }
+            }
             DB::commit();
             return (new SolicitudResource($solicitud->fresh()))
                 ->response()

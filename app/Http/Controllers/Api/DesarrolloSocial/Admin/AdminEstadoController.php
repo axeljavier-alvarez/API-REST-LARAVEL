@@ -17,7 +17,16 @@ class AdminEstadoController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $estados = Estado::withCount('solicitudes')->get();
+        // $estados = Estado::withCount('solicitudes')->get();
+        $estados = Estado::query()
+        ->withCount('solicitudes')
+        ->whereNotIn('nombre', [
+            'Pendiente',
+            'Analisis',
+            'Visita asignada',
+            'Visita realizada'
+        ])
+        ->get();
         return AdminEstadoResource::collection($estados);
     }
 }
