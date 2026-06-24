@@ -29,7 +29,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             'estado',
             'bitacoras.user'
         ])
-        
         ->latest()
         ->paginate(15);
 

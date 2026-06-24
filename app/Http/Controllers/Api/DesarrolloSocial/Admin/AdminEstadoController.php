@@ -21,8 +21,7 @@ class AdminEstadoController extends Controller implements HasMiddleware
         $estados = Estado::query()
         ->withCount('solicitudes')
         ->whereNotIn('nombre', [
-            'Pendiente',
-            'Analisis',
+            
             'Visita asignada',
             'Visita realizada'
         ])
