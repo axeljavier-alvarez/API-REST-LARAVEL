@@ -13,6 +13,9 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\DesarrolloSocial\Public\SolicitudController;
 use App\Http\Controllers\Api\DesarrolloSocial\Public\TramiteController;
 use App\Http\Controllers\Api\DesarrolloSocial\Admin\AdminSolicitudController;
+use App\Models\DesarrolloSocial\Estado;
+use App\Models\DesarrolloSocial\Bitacora;
+use Illuminate\Support\Facades\DB;
 
 Route::apiResource('tramitesDashboard', AdminTramiteController::class)->only(['index']);
 Route::apiResource('estadosDashboard', AdminEstadoController::class)->only(['index']);
@@ -24,6 +27,12 @@ Route::get(
     'solicitudesAnalisis',
     [AdminSolicitudController::class, 'analisis']
 );
+// admin
+Route::post(
+    'solicitudes/{solicitud}/cambiar-estado',
+    [AdminSolicitudController::class, 'cambiarEstado']
+);
+
 // ruta nueva
 Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);

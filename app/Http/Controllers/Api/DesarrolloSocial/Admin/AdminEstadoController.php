@@ -28,4 +28,5 @@ class AdminEstadoController extends Controller implements HasMiddleware
         ->get();
         return AdminEstadoResource::collection($estados);
     }
+   
 }
