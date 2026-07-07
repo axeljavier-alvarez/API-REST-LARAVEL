@@ -23,10 +23,17 @@ Route::apiResource(
     'solicitudesDashboard',
     AdminSolicitudController::class
 )->only(['index']);
+// ver solicitudes analisis
 Route::get(
     'solicitudesAnalisis',
     [AdminSolicitudController::class, 'analisis']
 );
+// ver solicitudes visitas de campo
+Route::get(
+    'solicitudesVisitas',
+    [AdminSolicitudController::class, 'visitas']
+);
+
 // admin
 Route::post(
     'solicitudes/{solicitud}/cambiar-estado',

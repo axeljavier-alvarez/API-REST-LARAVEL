@@ -90,5 +90,27 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         ]);
     }
 
+    // ver solicitudes en visita de campo
+    public function visitas()
+    {
+        $solicitudes = Solicitud::query()
+            ->with([
+                'tramite',
+                'estado',
+                'bitacoras.user',
+                'detallesSolicitudes.requisitoTramite.requisito'
+            ])
+            ->whereHas('estado', function ($query) {
+                $query->whereIn('nombre', [
+                    'Visita asignada',
+                    'Visita realizada'
+                ]);
+            })
+            ->latest()
+            ->paginate(15);
+
+        return SolicitudResourceAdmin::collection($solicitudes);
+    }
+
     
 }
