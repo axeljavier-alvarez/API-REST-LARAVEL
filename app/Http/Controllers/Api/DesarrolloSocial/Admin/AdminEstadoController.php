@@ -31,21 +31,5 @@ class AdminEstadoController extends Controller implements HasMiddleware
         return AdminEstadoResource::collection($estados);
     }
 
-    public function cambiarEstado(Request $request, Solicitud $solicitud)
-    {
-        $request->validate([
-            'estado_id' => 'required|exists:estados,id'
-        ]);
-
-        $solicitud->update([
-            'estado_id' => $request->estado_id
-        ]);
-
-        return response()->json([
-            'message' => 'Estado actualizado correctamente.',
-            'solicitud' => new SolicitudResource(
-                $solicitud->load('estado')
-            )
-        ]);
-    }
+    
 }
