@@ -13,7 +13,9 @@ use Illuminate\Http\Request;
 use App\Models\DesarrolloSocial\Estado;
 use App\Models\DesarrolloSocial\Bitacora;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Override;
+use App\Http\Requests\VisitaCampoStoreRequest;
 
 class AdminSolicitudController extends Controller implements HasMiddleware
 {
@@ -112,5 +114,62 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         return SolicitudResourceAdmin::collection($solicitudes);
     }
 
-    
+    public function guardarVisita(
+        VisitaCampoStoreRequest $request,
+        Solicitud $solicitud
+    ) {
+
+        DB::transaction(function () use ($request, $solicitud) {
+
+            foreach ($request->file('fotos') as $foto) {
+
+                $path = $foto->store(
+                    'visitas',
+                    'public'
+                );
+
+                $solicitud->detallesSolicitudes()->create([
+
+                    'path' => $path,
+
+                    'tipo' => 'foto_visita',
+
+                    'user_id' => auth('api')->id(),
+
+                    'requisito_tramite_id' => null
+
+                ]);
+            }
+
+            $estadoAnterior = $solicitud->estado;
+
+            $estadoNuevo = Estado::where(
+                'nombre',
+                'Visita realizada'
+            )->firstOrFail();
+
+            $solicitud->update([
+                'estado_id' => $estadoNuevo->id
+            ]);
+
+            Bitacora::create([
+
+                'solicitud_id' => $solicitud->id,
+
+                'user_id' => auth('api')->id(),
+
+                'evento' => 'Visita de campo',
+
+                'descripcion' =>
+                "Se realizó la visita de campo y se adjuntaron fotografías. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
+
+            ]);
+        });
+
+        return response()->json([
+
+            'message' => 'Visita registrada correctamente.'
+
+        ]);
+    }
 }

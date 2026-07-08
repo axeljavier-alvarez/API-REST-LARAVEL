@@ -40,6 +40,12 @@ Route::post(
     [AdminSolicitudController::class, 'cambiarEstado']
 );
 
+// subir fotos de visita de campo
+Route::post(
+    'solicitudes/{solicitud}/visita',
+    [AdminSolicitudController::class, 'guardarVisita']
+);
+
 // ruta nueva
 Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);
