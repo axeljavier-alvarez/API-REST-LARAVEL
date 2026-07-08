@@ -152,6 +152,10 @@ class AdminSolicitudController extends Controller implements HasMiddleware
                 'estado_id' => $estadoNuevo->id
             ]);
 
+            $descripcion = $request->filled('descripcion')
+            ? $request->descripcion
+            : "Se realizó la visita de campo y se adjuntaron fotografías. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'.";
+
             Bitacora::create([
 
                 'solicitud_id' => $solicitud->id,
@@ -160,8 +164,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
 
                 'evento' => 'Visita de campo',
 
-                'descripcion' =>
-                "Se realizó la visita de campo y se adjuntaron fotografías. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
+                'descripcion' => $descripcion
 
             ]);
         });

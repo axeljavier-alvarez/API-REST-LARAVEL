@@ -15,6 +15,7 @@ class VisitaCampoStoreRequest extends FormRequest
     public function rules(): array
     {
         return  [
+            'descripcion' => 'nullable|string|max:1000',
             'fotos' => 'required|array|min:1|max:5',
             'fotos.*' => [
                 'image',
@@ -40,7 +41,9 @@ class VisitaCampoStoreRequest extends FormRequest
 
             'fotos.*.mimes' => 'Solo se permiten JPG y PNG.',
 
-            'fotos.*.max' => 'Cada imagen no debe superar los 4 MB.'
+            'fotos.*.max' => 'Cada imagen no debe superar los 4 MB.',
+            
+            'descripcion.max' => 'La descripción no debe superar los 1000 caracteres.',
         ];
     }
 }
