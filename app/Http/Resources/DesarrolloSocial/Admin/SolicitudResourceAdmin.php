@@ -4,7 +4,7 @@ namespace App\Http\Resources\DesarrolloSocial\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-USE App\Http\Resources\DesarrolloSocial\TramiteResource;
+use App\Http\Resources\DesarrolloSocial\TramiteResource;
 use App\Http\Resources\DesarrolloSocial\EstadoResource;
 use App\Http\Resources\DesarrolloSocial\BitacoraResource;
 
@@ -38,6 +38,21 @@ class SolicitudResourceAdmin extends JsonResource
             'documentos' => DocumentoSolicitudResource::collection(
                 $this->whenLoaded('detallesSolicitudes')
             ),
+            'descripcion_visita' => optional(
+                $this->bitacoras
+                    ->where('evento', 'Visita de campo')
+                    ->sortByDesc('created_at')
+                    ->first()
+            )->descripcion,
+            'fotos_visita' => $this->detallesSolicitudes
+            ->where('tipo', 'foto_visita')
+            ->map(function($foto){
+                return [
+                    'id' => $foto->id,
+                    'url' => asset('storage/' . $foto->path),
+                ];
+            })
+            ->values(),
             'estado_id'     => $this->estado_id,
             'created_at'    => $this->created_at?->format('Y-m-d H:i:s'),
         ];

@@ -100,7 +100,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
                 'tramite',
                 'estado',
                 'bitacoras.user',
-                'detallesSolicitudes.requisitoTramite.requisito'
+                'detallesSolicitudes'
             ])
             ->whereHas('estado', function ($query) {
                 $query->whereIn('nombre', [
