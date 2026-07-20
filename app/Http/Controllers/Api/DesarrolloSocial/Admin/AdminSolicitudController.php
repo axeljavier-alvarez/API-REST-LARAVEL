@@ -114,6 +114,27 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         return SolicitudResourceAdmin::collection($solicitudes);
     }
 
+    public function solicitudesPorAutorizar()
+    {
+        $solicitudes = Solicitud::query()
+        ->with([
+            'tramite',
+            'estado',
+            'bitacoras.user',
+            'detallesSolicitudes'
+        ])
+        ->whereHas('estado', function ($query){
+            $query->whereIn('nombre', [
+                'Por autorizar'
+            ]);
+        })
+        ->latest()
+        ->paginate(15);
+
+        return SolicitudResourceAdmin::collection($solicitudes);
+    }
+
+
     public function guardarVisita(
         VisitaCampoStoreRequest $request,
         Solicitud $solicitud

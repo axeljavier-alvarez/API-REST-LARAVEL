@@ -37,6 +37,8 @@ class SolicitudResourceAdmin extends JsonResource
             ),
             'documentos' => DocumentoSolicitudResource::collection(
                 $this->whenLoaded('detallesSolicitudes')
+                ->where('tipo', 'documento')
+                ->values()
             ),
             'descripcion_visita' => optional(
                 $this->bitacoras

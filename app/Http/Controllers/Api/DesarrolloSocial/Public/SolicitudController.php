@@ -42,7 +42,6 @@ class SolicitudController extends Controller
                 'anio'          => date('Y'),
                 'estado_id'     => 1
             ]);
-
             $solicitud->no_solicitud = $solicitud->id . '-' . date('Y');
             $solicitud->save();
 
@@ -73,7 +72,7 @@ class SolicitudController extends Controller
                     // creando detalle
                     DetalleSolicitud::create([
                        'path' => $path,
-                       'tipo' => $archivo->getClientOriginalExtension(),
+                       'tipo' => 'documento',
                        'solicitud_id' => $solicitud->id,
                        'user_id' => null,
                        'requisito_tramite_id' => $requisitoTramite?->id

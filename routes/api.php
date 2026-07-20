@@ -30,8 +30,8 @@ Route::get(
 );
 // ver solicitudes visitas de campo
 Route::get(
-    'solicitudesVisitas',
-    [AdminSolicitudController::class, 'visitas']
+    'solicitudesPorAutorizar',
+    [AdminSolicitudController::class, 'solicitudesPorAutorizar']
 );
 
 // admin
@@ -44,6 +44,12 @@ Route::post(
 Route::post(
     'solicitudes/{solicitud}/visita',
     [AdminSolicitudController::class, 'guardarVisita']
+);
+
+// autorizar
+Route::get(
+    'autorizar',
+    [AdminSolicitudController::class, 'autorizar']
 );
 
 // ruta nueva
