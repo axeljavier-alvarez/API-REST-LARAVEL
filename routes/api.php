@@ -16,7 +16,6 @@ use App\Http\Controllers\Api\DesarrolloSocial\Admin\AdminSolicitudController;
 use App\Models\DesarrolloSocial\Estado;
 use App\Models\DesarrolloSocial\Bitacora;
 use Illuminate\Support\Facades\DB;
-
 Route::apiResource('tramitesDashboard', AdminTramiteController::class)->only(['index']);
 Route::apiResource('estadosDashboard', AdminEstadoController::class)->only(['index']);
 Route::apiResource(
@@ -33,6 +32,13 @@ Route::get(
     'solicitudesPorAutorizar',
     [AdminSolicitudController::class, 'solicitudesPorAutorizar']
 );
+
+// ver solicitudes visita de campo
+Route::get(
+    'solicitudesVisitas',
+    [AdminSolicitudController::class, 'visitas']
+);
+
 
 // admin
 Route::post(
