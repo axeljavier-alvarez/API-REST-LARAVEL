@@ -16,6 +16,10 @@ use App\Http\Controllers\Api\DesarrolloSocial\Admin\AdminSolicitudController;
 use App\Models\DesarrolloSocial\Estado;
 use App\Models\DesarrolloSocial\Bitacora;
 use Illuminate\Support\Facades\DB;
+
+Route::get('solicitudes/{solicitud}/pdf',
+[AdminSolicitudController::class, 'pdf']);
+
 Route::apiResource('tramitesDashboard', AdminTramiteController::class)->only(['index']);
 Route::apiResource('estadosDashboard', AdminEstadoController::class)->only(['index']);
 Route::apiResource(
