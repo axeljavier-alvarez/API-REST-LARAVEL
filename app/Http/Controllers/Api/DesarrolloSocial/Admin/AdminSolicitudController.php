@@ -16,9 +16,34 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Override;
 use App\Http\Requests\VisitaCampoStoreRequest;
-
+use Barryvdh\DomPDF\Facade\Pdf;
+// composer require barryvdh/laravel-dompdf
 class AdminSolicitudController extends Controller implements HasMiddleware
 {
+    public function pdf(Solicitud $solicitud){
+        $solicitud->load([
+            'tramite',
+        ]);
+
+        if($solicitud->tramite_id == 1){
+            $view = 'pdf.magisterio_sin_cargas';
+        } else {
+            $view = 'pdf.solicitudes_varias';
+        }
+
+        $fecha = now();
+
+        $pdf = Pdf::loadView($view, [
+            'solicitud' => $solicitud,
+            'dia' => $fecha->format('d'),
+            'mes' => $fecha->translatedFormat('F'),
+            'anio' => $fecha->format('Y'),
+        ]);
+
+        return $pdf->download('constancia.pdf');
+    }
+
+
     #[Override]
     public static function middleware()
     {
@@ -40,7 +65,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
 
         return SolicitudResource::collection($solicitudes);
     }
-
     public function analisis()
     {
         $solicitudes = Solicitud::query()
@@ -64,7 +88,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             $solicitudes
         );
     }
-
     public function cambiarEstado(Request $request, Solicitud $solicitud)
     {
         $request->validate([
@@ -83,7 +106,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             'evento' => 'Cambio de estado',
             'descripcion'  => "Se cambió el estado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
         ]);
-
         return response()->json([
             'message' => 'Estado actualiado correctamente',
             'solicitud' => new SolicitudResource(
@@ -91,7 +113,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             )
         ]);
     }
-
     // ver solicitudes en visita de campo
     public function visitas()
     {

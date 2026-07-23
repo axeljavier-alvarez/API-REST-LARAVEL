@@ -22,7 +22,6 @@ class Tramite extends Model
         );
     }
 
-    // 🌟 AGREGA ESTA FUNCIÓN QUE FALTA:
     // Un trámite tiene muchas solicitudes asociadas
     public function solicitudes()
     {

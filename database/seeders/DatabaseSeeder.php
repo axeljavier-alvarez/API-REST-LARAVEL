@@ -14,30 +14,23 @@ use Spatie\Permission\Models\Role;
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
         // User::factory(10)->create();
-
         $user =User::factory()->create([
             'name' => 'Victor Arana',
             'email' => 'victor@codersfree.com',
             'password' => bcrypt('12345678')
         ]);
-
         Task::factory(100)->create([
             'user_id' => $user->id
         ]);
-
         Category::factory(10)->create();
-
         Post::factory(100)->create();
-
         Tag::factory(10)->create();
-
         $this->call([
             PermissionSeeder::class,
             RoleSeeder::class,
@@ -46,9 +39,7 @@ class DatabaseSeeder extends Seeder
             RequisitoTramiteSeeder::class,
             EstadoSeeder::class
         ]);
-
         // $user->assignRole('admin');
-        $user->roles()->attach(1);
-         
+        $user->roles()->attach(1);         
     }
 }
