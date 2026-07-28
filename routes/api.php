@@ -26,6 +26,11 @@ Route::apiResource(
     'solicitudesDashboard',
     AdminSolicitudController::class
 )->only(['index']);
+// ver solicitudes emitido y autorizado
+Route::get(
+    'solicitudesAutorizadas',
+    [AdminSolicitudController::class, 'autorizaciones']
+);
 // ver solicitudes analisis
 Route::get(
     'solicitudesAnalisis',
