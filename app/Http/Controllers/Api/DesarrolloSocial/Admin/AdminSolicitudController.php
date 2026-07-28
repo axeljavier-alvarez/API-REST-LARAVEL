@@ -20,29 +20,51 @@ use Barryvdh\DomPDF\Facade\Pdf;
 // composer require barryvdh/laravel-dompdf
 class AdminSolicitudController extends Controller implements HasMiddleware
 {
-    public function pdf(Solicitud $solicitud){
-        $solicitud->load([
-            'tramite',
+    
+public function pdf(Solicitud $solicitud)
+{
+    DB::transaction(function () use ($solicitud) {
+
+        $estadoAnterior = $solicitud->estado;
+
+        $estadoNuevo = Estado::where(
+            'nombre',
+            'Emitido'
+        )->firstOrFail();
+
+        $solicitud->update([
+            'estado_id' => $estadoNuevo->id
         ]);
 
-        if($solicitud->tramite_id == 1){
-            $view = 'pdf.magisterio_sin_cargas';
-        } else {
-            $view = 'pdf.solicitudes_varias';
-        }
-
-        $fecha = now();
-
-        $pdf = Pdf::loadView($view, [
-            'solicitud' => $solicitud,
-            'dia' => $fecha->format('d'),
-            'mes' => $fecha->translatedFormat('F'),
-            'anio' => $fecha->format('Y'),
+        Bitacora::create([
+            'solicitud_id' => $solicitud->id,
+            'user_id'      => auth('api')->id(),
+            'evento'       => 'Emisión de constancia',
+            'descripcion'  => "Se emitió la constancia. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
         ]);
+    });
 
-        return $pdf->download('constancia.pdf');
+    $solicitud->load([
+        'tramite'
+    ]);
+
+    if ($solicitud->tramite_id == 1) {
+        $view = 'pdf.magisterio_sin_cargas';
+    } else {
+        $view = 'pdf.solicitudes_varias';
     }
 
+    $fecha = now();
+
+    $pdf = Pdf::loadView($view, [
+        'solicitud' => $solicitud,
+        'dia'       => $fecha->format('d'),
+        'mes'       => $fecha->translatedFormat('F'),
+        'anio'      => $fecha->format('Y'),
+    ]);
+
+    return $pdf->download('constancia.pdf');
+}
 
     #[Override]
     public static function middleware()

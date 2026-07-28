@@ -1,13 +1,10 @@
 <?php
-
 namespace App\Http\Requests;
-
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Models\DesarrolloSocial\Tramite;
-
 class SolicitudStoreRequest extends FormRequest
 {
     /**
@@ -50,7 +47,6 @@ class SolicitudStoreRequest extends FormRequest
 
         return $rules[$step] ?? [];
     }
-
     /**
      * Retorna las reglas de validación que Laravel aplicará dinámicamente.
      */
@@ -84,7 +80,6 @@ class SolicitudStoreRequest extends FormRequest
 
             return $rules;
         }
-
         $rules = array_merge(
             $this->rulesByStep(1),
             $this->rulesByStep(2),
@@ -181,7 +176,6 @@ class SolicitudStoreRequest extends FormRequest
         for ($i = 0; $i < 8; $i++) {
             $total += (int)$numero[$i] * ($i + 2);
         }
-
         return ($total % 11) === $verificador;
     }
 }
