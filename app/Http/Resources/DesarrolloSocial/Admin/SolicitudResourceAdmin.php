@@ -55,6 +55,15 @@ class SolicitudResourceAdmin extends JsonResource
                 ];
             })
             ->values(),
+            'constancia' => $this->detallesSolicitudes
+            ->where('tipo', 'constancia')
+            ->map(function($foto){
+                return [
+                    'id' => $foto->id,
+                    'url' => asset('storage/' . $foto->path),
+                ];
+            })
+            ->values(),
             'estado_id'     => $this->estado_id,
             'created_at'    => $this->created_at?->format('Y-m-d H:i:s'),
         ];

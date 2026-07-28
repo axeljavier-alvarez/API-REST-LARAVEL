@@ -17,54 +17,69 @@ use Illuminate\Support\Facades\Storage;
 use Override;
 use App\Http\Requests\VisitaCampoStoreRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\DesarrolloSocial\DetalleSolicitud;
 // composer require barryvdh/laravel-dompdf
 class AdminSolicitudController extends Controller implements HasMiddleware
 {
-    
-public function pdf(Solicitud $solicitud)
-{
-    DB::transaction(function () use ($solicitud) {
 
-        $estadoAnterior = $solicitud->estado;
+    public function pdf(Solicitud $solicitud)
+    {
 
-        $estadoNuevo = Estado::where(
-            'nombre',
-            'Emitido'
-        )->firstOrFail();
-
-        $solicitud->update([
-            'estado_id' => $estadoNuevo->id
+        $solicitud->load([
+            'tramite'
         ]);
 
-        Bitacora::create([
-            'solicitud_id' => $solicitud->id,
-            'user_id'      => auth('api')->id(),
-            'evento'       => 'Emisión de constancia',
-            'descripcion'  => "Se emitió la constancia. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
+        $view = $solicitud->tramite_id == 1
+            ? 'pdf.magisterio_sin_cargas'
+            : 'pdf.solicitudes_varias';
+
+        $fecha = now();
+
+        $pdf = Pdf::loadView($view, [
+            'solicitud' => $solicitud,
+            'dia' => $fecha->format('d'),
+            'mes' => $fecha->translatedFormat('F'),
+            'anio' => $fecha->format('Y')
         ]);
-    });
+        // nombre del archivo
+        $nombreArchivo = 'constancias/constancia_' .
+            $solicitud->id . '_' . time() . '.pdf';
+        
+        Storage::disk('public')->put(
+            $nombreArchivo,
+            $pdf->output()
+        );
 
-    $solicitud->load([
-        'tramite'
-    ]);
-
-    if ($solicitud->tramite_id == 1) {
-        $view = 'pdf.magisterio_sin_cargas';
-    } else {
-        $view = 'pdf.solicitudes_varias';
+        try {
+            DB::transaction(function() use($solicitud, $nombreArchivo){
+                $estadoAnterior = $solicitud->estado;
+                $estadoNuevo = Estado::where(
+                    'nombre',
+                    'Emitido'
+                )->firstOrFail();
+                $solicitud->update([
+                    'estado_id' => $estadoNuevo->id
+                ]);
+                Bitacora::create([
+                    'solicitud_id' => $solicitud->id,
+                    'user_id' => auth('api')->id(),
+                    'evento' => 'Emisión de constancia',
+                    'descripcion' => "Se emitió la constancia. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
+                ]);
+                DetalleSolicitud::create([
+                    'path' => $nombreArchivo,
+                    'tipo' => 'constancia',
+                    'solicitud_id' => $solicitud->id,
+                    'user_id' => auth('api')->id(),
+                    'requisito_tramite_id' => null,
+                ]);
+            });
+        } catch(\Throwable $e){
+            Storage::disk('public')->delete($nombreArchivo);
+            throw $e;
+        }
+        return $pdf->download('constancia.pdf');
     }
-
-    $fecha = now();
-
-    $pdf = Pdf::loadView($view, [
-        'solicitud' => $solicitud,
-        'dia'       => $fecha->format('d'),
-        'mes'       => $fecha->translatedFormat('F'),
-        'anio'      => $fecha->format('Y'),
-    ]);
-
-    return $pdf->download('constancia.pdf');
-}
 
     #[Override]
     public static function middleware()
@@ -160,19 +175,20 @@ public function pdf(Solicitud $solicitud)
     public function solicitudesPorAutorizar()
     {
         $solicitudes = Solicitud::query()
-        ->with([
-            'tramite',
-            'estado',
-            'bitacoras.user',
-            'detallesSolicitudes'
-        ])
-        ->whereHas('estado', function ($query){
-            $query->whereIn('nombre', [
-                'Por autorizar'
-            ]);
-        })
-        ->latest()
-        ->paginate(15);
+            ->with([
+                'tramite',
+                'estado',
+                'bitacoras.user',
+                'detallesSolicitudes'
+            ])
+            ->whereHas('estado', function ($query) {
+                $query->whereIn('nombre', [
+                    'Por autorizar',
+                    'Emitido'
+                ]);
+            })
+            ->latest()
+            ->paginate(15);
 
         return SolicitudResourceAdmin::collection($solicitudes);
     }
@@ -217,8 +233,8 @@ public function pdf(Solicitud $solicitud)
             ]);
 
             $descripcion = $request->filled('descripcion')
-            ? $request->descripcion
-            : "Se realizó la visita de campo y se adjuntaron fotografías. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'.";
+                ? $request->descripcion
+                : "Se realizó la visita de campo y se adjuntaron fotografías. Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'.";
 
             Bitacora::create([
 
