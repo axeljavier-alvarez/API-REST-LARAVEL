@@ -17,6 +17,11 @@ use App\Models\DesarrolloSocial\Estado;
 use App\Models\DesarrolloSocial\Bitacora;
 use Illuminate\Support\Facades\DB;
 
+// descargar archivo
+Route::get(
+    'solicitudes/documentos/{detalleSolicitud}/download',
+    [AdminSolicitudController::class, 'descargarDocumento']
+);
 // rechazar
 Route::put(
 'solicitudes/{solicitud}/rechazar',

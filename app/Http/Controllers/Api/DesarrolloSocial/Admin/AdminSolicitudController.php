@@ -21,6 +21,20 @@ use App\Models\DesarrolloSocial\DetalleSolicitud;
 // composer require barryvdh/laravel-dompdf
 class AdminSolicitudController extends Controller implements HasMiddleware
 {
+    // descargar documentos
+    public function descargarDocumento(DetalleSolicitud $detalleSolicitud)
+    {
+        if (!Storage::disk('public')->exists($detalleSolicitud->path)) {
+            return response()->json([
+                'message' => 'Archivo no encontrado'
+            ], 404);
+        }
+
+        return Storage::disk('public')->download(
+            $detalleSolicitud->path,
+            basename($detalleSolicitud->path)
+        );
+    }
 
     public function pdf(Solicitud $solicitud)
     {
@@ -186,7 +200,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
                 'min:5'
             ]
         ]);
-        DB::transaction(function() use($request, $solicitud){
+        DB::transaction(function () use ($request, $solicitud) {
             $estadoAnterior = $solicitud->estado;
             $estadoNuevo = Estado::findOrFail(
                 $request->estado_id
@@ -200,8 +214,8 @@ class AdminSolicitudController extends Controller implements HasMiddleware
                 'solicitud_id' => $solicitud->id,
                 'user_id' => auth('api')->id(),
                 'evento' => 'Solicitud rechazada',
-                 'descripcion' => $request->descripcion
-                . " Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
+                'descripcion' => $request->descripcion
+                    . " Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
             ]);
         });
 
