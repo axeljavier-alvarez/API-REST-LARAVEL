@@ -17,6 +17,12 @@ use App\Models\DesarrolloSocial\Estado;
 use App\Models\DesarrolloSocial\Bitacora;
 use Illuminate\Support\Facades\DB;
 
+// rechazar
+Route::put(
+'solicitudes/{solicitud}/rechazar',
+[AdminSolicitudController::class, 'rechazar']
+);
+
 Route::get('solicitudes/{solicitud}/pdf',
 [AdminSolicitudController::class, 'pdf']);
 

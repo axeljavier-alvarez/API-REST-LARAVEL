@@ -44,14 +44,14 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         // nombre del archivo
         $nombreArchivo = 'constancias/constancia_' .
             $solicitud->id . '_' . time() . '.pdf';
-        
+
         Storage::disk('public')->put(
             $nombreArchivo,
             $pdf->output()
         );
 
         try {
-            DB::transaction(function() use($solicitud, $nombreArchivo){
+            DB::transaction(function () use ($solicitud, $nombreArchivo) {
                 $estadoAnterior = $solicitud->estado;
                 $estadoNuevo = Estado::where(
                     'nombre',
@@ -74,7 +74,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
                     'requisito_tramite_id' => null,
                 ]);
             });
-        } catch(\Throwable $e){
+        } catch (\Throwable $e) {
             Storage::disk('public')->delete($nombreArchivo);
             throw $e;
         }
@@ -114,7 +114,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             ->whereHas('estado', function ($query) {
                 $query->whereIn('nombre', [
                     'Emitido',
-                    'Autorizado',                    
+                    'Autorizado',
                 ]);
             })
             ->latest()
@@ -169,6 +169,49 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             'message' => 'Estado actualiado correctamente',
             'solicitud' => new SolicitudResource(
                 $solicitud->load('estado', 'bitacoras')
+            )
+        ]);
+    }
+    // rechazar
+    public function rechazar(Request $request, Solicitud $solicitud)
+    {
+        $request->validate([
+            'estado_id' => [
+                'required',
+                'exists:estados,id'
+            ],
+            'descripcion' => [
+                'required',
+                'string',
+                'min:5'
+            ]
+        ]);
+        DB::transaction(function() use($request, $solicitud){
+            $estadoAnterior = $solicitud->estado;
+            $estadoNuevo = Estado::findOrFail(
+                $request->estado_id
+            );
+            // cambiar estado
+            $solicitud->update([
+                'estado_id' => $estadoNuevo->id
+            ]);
+            // guardar bitacora
+            Bitacora::create([
+                'solicitud_id' => $solicitud->id,
+                'user_id' => auth('api')->id(),
+                'evento' => 'Solicitud rechazada',
+                 'descripcion' => $request->descripcion
+                . " Estado cambiado de '{$estadoAnterior->nombre}' a '{$estadoNuevo->nombre}'."
+            ]);
+        });
+
+        return response()->json([
+            'message' => 'Solicitud rechazada correctamente',
+            'solicitud' => new SolicitudResource(
+                $solicitud->load(
+                    'estado',
+                    'bitacoras'
+                )
             )
         ]);
     }
