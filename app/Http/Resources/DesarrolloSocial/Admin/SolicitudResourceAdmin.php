@@ -51,6 +51,7 @@ class SolicitudResourceAdmin extends JsonResource
             ->map(function($foto){
                 return [
                     'id' => $foto->id,
+                    'path' => $foto->path,
                     'url' => asset('storage/' . $foto->path),
                 ];
             })
@@ -60,6 +61,7 @@ class SolicitudResourceAdmin extends JsonResource
             ->map(function($foto){
                 return [
                     'id' => $foto->id,
+                    'path' => $foto->path,
                     'url' => asset('storage/' . $foto->path),
                 ];
             })

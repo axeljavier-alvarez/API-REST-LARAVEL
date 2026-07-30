@@ -22,27 +22,32 @@ use App\Models\DesarrolloSocial\DetalleSolicitud;
 class AdminSolicitudController extends Controller implements HasMiddleware
 {
     // descargar documentos
-    public function descargarDocumento(DetalleSolicitud $detalleSolicitud)
+    public function descargarDocumento($id)
     {
-        if (!Storage::disk('public')->exists($detalleSolicitud->path)) {
-            return response()->json([
-                'message' => 'Archivo no encontrado'
-            ], 404);
+        $documento = DetalleSolicitud::findOrFail($id);
+
+        $ruta = storage_path('app/public/' . $documento->path);
+
+        if (!file_exists($ruta)) {
+            abort(404, 'Archivo no encontrado');
         }
 
-        return Storage::disk('public')->download(
-            $detalleSolicitud->path,
-            basename($detalleSolicitud->path)
+        
+
+        return response()->download(
+            $ruta,
+            basename($ruta),
+            [
+                'Content-Type' => mime_content_type($ruta),
+            ]
         );
     }
 
     public function pdf(Solicitud $solicitud)
     {
-
         $solicitud->load([
             'tramite'
         ]);
-
         $view = $solicitud->tramite_id == 1
             ? 'pdf.magisterio_sin_cargas'
             : 'pdf.solicitudes_varias';
