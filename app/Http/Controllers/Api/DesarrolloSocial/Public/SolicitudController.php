@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\DesarrolloSocial\DetalleSolicitud;
 use App\Models\DesarrolloSocial\RequisitoTramite;
 use App\Models\DesarrolloSocial\Tramite;
+use App\Http\Requests\SolicitudConsultaRequest;
 
 class SolicitudController extends Controller
 {
@@ -90,15 +91,9 @@ class SolicitudController extends Controller
                 'error' => $th->getMessage()], 500);
         }
     }
-
-    public function consultar(Request $request)
+    
+    public function consultar(SolicitudConsultaRequest $request)
     {
-        $request->validate([
-            'cui' => 'required|string',
-            'no_solicitud' => 'required|string'
-        ]);
-
-        // laravel hace consultas optimizadas
         $solicitud = Solicitud::with([
             'tramite.requisitos',
             'estado'
@@ -107,13 +102,13 @@ class SolicitudController extends Controller
         ->where('no_solicitud', $request->no_solicitud)
         ->first();
 
-        if(!$solicitud){
+        if (!$solicitud) {
             return response()->json([
-                'message' => 'Solicitud no encontrada'
+                'message' => 'Los datos ingresados no coinciden con ninguna solicitud.'
             ], 404);
         }
 
         return new SolicitudResource($solicitud);
-
     }
+    
 }
