@@ -36,7 +36,7 @@ class SolicitudController extends Controller
                 'bitacoras.user'
             ])
             ->latest()
-            ->paginate(15);
+            ->paginate(10);
         return SolicitudResource::collection($solicitudes);
     }
 

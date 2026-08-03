@@ -106,28 +106,18 @@ class SolicitudStoreRequest extends FormRequest
             $this->rulesByStep(2),
             $this->rulesByStep(3)
         );
-
         if ($this->tramite_id) {
-
             $tramite = Tramite::with('requisitos')
                 ->find($this->tramite_id);
-
             if ($this->tramite_id) {
-
                 $tramite = Tramite::with('requisitos')
                     ->find($this->tramite_id);
-
                 if ($tramite) {
-
                     foreach ($tramite->requisitos as $requisito) {
-
                         // Validar si es cargas familiares
                         $esCargaFamiliar = mb_strtolower(trim($requisito->nombre)) === 'cargas familiares';
-
                         if ($esCargaFamiliar) {
-
                             $rules['tiene_dependientes'] = 'required|boolean';
-
                             $rules['dependientes'] = [
                                 'required_if:tiene_dependientes,1',
                                 'array',
@@ -142,15 +132,11 @@ class SolicitudStoreRequest extends FormRequest
 
                             continue;
                         }
-
-
                         // Requisitos que sí son archivos
                         $campo = 'requisito_' . $requisito->id;
-
                         // Validar requisito opcional
                         $esOpcional = mb_strtolower(trim($requisito->nombre))
                             === 'fotocopia del boleto de ornato';
-
                         $rules[$campo] = [
                             $esOpcional ? 'nullable' : 'required',
                             'file',
@@ -161,7 +147,6 @@ class SolicitudStoreRequest extends FormRequest
                 }
             }
         }
-
         return $rules;
     }
     public function messages(): array
@@ -184,7 +169,6 @@ class SolicitudStoreRequest extends FormRequest
             'tramite_id.required'  => 'Debe seleccionar un tipo de trámite.',
             'tramite_id.exists'    => 'El trámite seleccionado no es válido.',
         ];
-
         if ($this->tramite_id) {
             $tramite = Tramite::with('requisitos')
                 ->find($this->tramite_id);
@@ -203,7 +187,6 @@ class SolicitudStoreRequest extends FormRequest
                 }
             }
         }
-
         return $messages;
     }
     protected function failedValidation(Validator $validator)

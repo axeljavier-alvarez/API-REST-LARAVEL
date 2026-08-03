@@ -42,7 +42,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             ]
         );
     }
-
     public function pdf(Solicitud $solicitud)
     {
         $solicitud->load([
@@ -107,7 +106,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             new Middleware('auth:api')
         ];
     }
-
     public function index()
     {
         $solicitudes = Solicitud::query()
@@ -117,7 +115,7 @@ class AdminSolicitudController extends Controller implements HasMiddleware
                 'bitacoras.user'
             ])
             ->latest()
-            ->paginate(15);
+            ->paginate(10);
 
         return SolicitudResource::collection($solicitudes);
     }
