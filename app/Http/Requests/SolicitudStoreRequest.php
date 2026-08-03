@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Requests;
+
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Models\DesarrolloSocial\Tramite;
+
 class SolicitudStoreRequest extends FormRequest
 {
     /**
@@ -37,8 +40,9 @@ class SolicitudStoreRequest extends FormRequest
                 ]
             ],
             2 => [
-                'razon'      => 'required|string|min:10|max:1000',
+                'razon'      => 'required|string|min:5|max:1000',
                 'tramite_id' => 'required|exists:tramites,id',
+
             ],
             3 => [
                 'observaciones' => 'nullable|string|max:1000',
@@ -65,11 +69,28 @@ class SolicitudStoreRequest extends FormRequest
                 if ($tramite) {
 
                     foreach ($tramite->requisitos as $requisito) {
+                        // CARGA FAMILIAR
+                        $esCargaFamiliar = mb_strtolower(trim($requisito->nombre)) === 'cargas familiares';
 
+                        if ($esCargaFamiliar) {
+                            $rules['tiene_dependientes'] = 'required|boolean';
+                            $rules['dependientes'] = [
+                                'required_if:tiene_dependientes,1',
+                                'array',
+                                'min:1',
+                                'max:4'
+                            ];
+                            $rules['dependientes.*.nombres'] =
+                                'required_if:tiene_dependientes,1|string|max:100';
+                            $rules['dependientes.*.apellidos'] =
+                                'required_if:tiene_dependientes,1|string|max:100';
+                            continue;
+                        }
                         $campo = 'requisito_' . $requisito->id;
-
+                        // validacion para requisito opcional
+                        $esOpcional = mb_strtolower($requisito->nombre) === 'fotocopia del boleto de ornato';
                         $rules[$campo] = [
-                            'required',
+                            $esOpcional ? 'nullable' : 'required',
                             'file',
                             'mimes:pdf,jpg,jpeg,png',
                             'max:2048'
@@ -91,18 +112,52 @@ class SolicitudStoreRequest extends FormRequest
             $tramite = Tramite::with('requisitos')
                 ->find($this->tramite_id);
 
-            if ($tramite) {
+            if ($this->tramite_id) {
 
-                foreach ($tramite->requisitos as $requisito) {
+                $tramite = Tramite::with('requisitos')
+                    ->find($this->tramite_id);
 
-                    $campo = 'requisito_' . $requisito->id;
+                if ($tramite) {
 
-                    $rules[$campo] = [
-                        'required',
-                        'file',
-                        'mimes:pdf,jpg,jpeg,png',
-                        'max:2048'
-                    ];
+                    foreach ($tramite->requisitos as $requisito) {
+
+                        // Validar si es cargas familiares
+                        $esCargaFamiliar = mb_strtolower(trim($requisito->nombre)) === 'cargas familiares';
+
+                        if ($esCargaFamiliar) {
+
+                            $rules['tiene_dependientes'] = 'required|boolean';
+
+                            $rules['dependientes'] = [
+                                'required_if:tiene_dependientes,1',
+                                'array',
+                                'min:1',
+                                'max:4'
+                            ];
+                            $rules['dependientes.*.nombres'] =
+                                'required_if:tiene_dependientes,1|string|max:100';
+
+                            $rules['dependientes.*.apellidos'] =
+                                'required_if:tiene_dependientes,1|string|max:100';
+
+                            continue;
+                        }
+
+
+                        // Requisitos que sí son archivos
+                        $campo = 'requisito_' . $requisito->id;
+
+                        // Validar requisito opcional
+                        $esOpcional = mb_strtolower(trim($requisito->nombre))
+                            === 'fotocopia del boleto de ornato';
+
+                        $rules[$campo] = [
+                            $esOpcional ? 'nullable' : 'required',
+                            'file',
+                            'mimes:pdf,jpg,jpeg,png',
+                            'max:2048'
+                        ];
+                    }
                 }
             }
         }
@@ -125,7 +180,7 @@ class SolicitudStoreRequest extends FormRequest
             'domicilio.required'   => 'El domicilio es requerido.',
             'zona.required'        => 'La zona es requerida.',
             'razon.required'       => 'La razón de la solicitud es requerida.',
-            'razon.min'            => 'La razón debe tener al menos 10 caracteres.',
+            'razon.min'            => 'La razón debe tener al menos 5 caracteres.',
             'tramite_id.required'  => 'Debe seleccionar un tipo de trámite.',
             'tramite_id.exists'    => 'El trámite seleccionado no es válido.',
         ];

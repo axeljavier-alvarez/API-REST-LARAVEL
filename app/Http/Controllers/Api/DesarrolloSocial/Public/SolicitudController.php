@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Api\DesarrolloSocial\Public;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DesarrolloSocial\Solicitud;
@@ -13,6 +15,8 @@ use App\Models\DesarrolloSocial\DetalleSolicitud;
 use App\Models\DesarrolloSocial\RequisitoTramite;
 use App\Models\DesarrolloSocial\Tramite;
 use App\Http\Requests\SolicitudConsultaRequest;
+use App\Models\DesarrolloSocial\Dependiente;
+use App\Models\DesarrolloSocial\Requisito;
 
 class SolicitudController extends Controller
 {
@@ -21,6 +25,19 @@ class SolicitudController extends Controller
         return response()->json([
             'message' => 'Paso ' . $request->input('step') . ' válido.'
         ], 200);
+    }
+
+    public function index()
+    {
+        $solicitudes = Solicitud::query()
+            ->with([
+                'tramite',
+                'estado',
+                'bitacoras.user'
+            ])
+            ->latest()
+            ->paginate(15);
+        return SolicitudResource::collection($solicitudes);
     }
 
     public function store(SolicitudStoreRequest $request)
@@ -54,11 +71,53 @@ class SolicitudController extends Controller
             ]);
 
             $tramite = Tramite::with('requisitos')
-            ->findOrFail($request->tramite_id);
+                ->findOrFail($request->tramite_id);
 
-            foreach($tramite->requisitos as $requisito){
+            foreach ($tramite->requisitos as $requisito) {
                 $campo = 'requisito_' . $requisito->id;
-                if ($request->hasFile($campo)){
+                $esCargaFamiliar = mb_strtolower(trim($requisito->nombre))
+                    === 'cargas familiares';
+                /* CARGA FAMILIAR */
+                if ($esCargaFamiliar) {
+                    $requisitoTramite = RequisitoTramite::where('tramite_id', $tramite->id)
+                        ->where('requisito_id', $requisito->id)
+                        ->first();
+                    // crear detalle sin archivo
+                    $detalle = DetalleSolicitud::create([
+                        'path' => null,
+                        'tipo' => 'dependiente',
+                        'solicitud_id' => $solicitud->id,
+                        'user_id' => null,
+                        'requisito_tramite_id' => $requisitoTramite?->id
+                    ]);
+                    // si indicó que tiene dependientes
+                    if ($request->boolean('tiene_dependientes') && $request->dependientes) {
+                        foreach ($request->dependientes as $dependiente) {
+                            Dependiente::create([
+                                'nombres' => mb_convert_case(
+                                    trim($dependiente['nombres']),
+                                    MB_CASE_TITLE,
+                                    "UTF-8"
+                                ),
+                                'apellidos' => mb_convert_case(
+                                    trim($dependiente['apellidos']),
+                                    MB_CASE_TITLE,
+                                    "UTF-8"
+                                ),
+                                'detalle_solicitud_id' => $detalle->id
+                            ]);
+                        }
+                        Bitacora::create([
+                            'solicitud_id' => $solicitud->id,
+                            'user_id' => null,
+                            'evento' => 'CARGAS FAMILIARES',
+                            'descripcion' => 'Se registraron ' . count($request->dependientes) . ' dependientes.'
+                        ]);
+                    }
+                    continue;
+                }
+                // DOCUMENTOS NORMALES
+                if ($request->hasFile($campo)) {
                     $archivo = $request->file($campo);
                     // guardar archivo
                     $path = $archivo->store(
@@ -67,16 +126,16 @@ class SolicitudController extends Controller
                     );
                     // buscar relación pivote
                     $requisitoTramite = RequisitoTramite::where('tramite_id', $tramite->id)
-                    ->where('requisito_id', $requisito->id)
-                    ->first();
+                        ->where('requisito_id', $requisito->id)
+                        ->first();
 
                     // creando detalle
                     DetalleSolicitud::create([
-                       'path' => $path,
-                       'tipo' => 'documento',
-                       'solicitud_id' => $solicitud->id,
-                       'user_id' => null,
-                       'requisito_tramite_id' => $requisitoTramite?->id
+                        'path' => $path,
+                        'tipo' => 'documento',
+                        'solicitud_id' => $solicitud->id,
+                        'user_id' => null,
+                        'requisito_tramite_id' => $requisitoTramite?->id
                     ]);
                 }
             }
@@ -88,19 +147,20 @@ class SolicitudController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Error',
-                'error' => $th->getMessage()], 500);
+                'error' => $th->getMessage()
+            ], 500);
         }
     }
-    
+
     public function consultar(SolicitudConsultaRequest $request)
     {
         $solicitud = Solicitud::with([
             'tramite.requisitos',
             'estado'
         ])
-        ->where('cui', $request->cui)
-        ->where('no_solicitud', $request->no_solicitud)
-        ->first();
+            ->where('cui', $request->cui)
+            ->where('no_solicitud', $request->no_solicitud)
+            ->first();
 
         if (!$solicitud) {
             return response()->json([
@@ -110,5 +170,4 @@ class SolicitudController extends Controller
 
         return new SolicitudResource($solicitud);
     }
-    
 }
