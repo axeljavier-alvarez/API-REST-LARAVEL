@@ -21,23 +21,23 @@ class SolicitudStoreRequest extends FormRequest
     {
         $rules = [
             1 => [
-                'nombres'   => 'required|string|max:60',
-                'apellidos' => 'required|string|max:60',
-                'email' => 'required|email|unique:solicitudes,email|max:45',
-                'telefono'  => 'required|numeric|digits_between:8,15',
-                'domicilio' => 'required|string|max:255',
-                'zona'      => 'required|integer',
-                'cui' => [
-                    'required',
-                    'string',
-                    'digits:13',
-                    'unique:solicitudes,cui,' . ($this->solicitud?->id ?? 'NULL'),
-                    function ($attribute, $value, $fail) {
-                        if (!$this->cuiEsValido($value)) {
-                            $fail('El número de CUI no es válido');
-                        }
-                    }
-                ]
+                // 'nombres'   => 'required|string|max:60',
+                // 'apellidos' => 'required|string|max:60',
+                // 'email' => 'required|email|unique:solicitudes,email|max:45',
+                // 'telefono'  => 'required|numeric|digits_between:8,15',
+                // 'domicilio' => 'required|string|max:255',
+                // 'zona'      => 'required|integer',
+                // 'cui' => [
+                //     'required',
+                //     'string',
+                //     'digits:13',
+                //     'unique:solicitudes,cui,' . ($this->solicitud?->id ?? 'NULL'),
+                //     function ($attribute, $value, $fail) {
+                //         if (!$this->cuiEsValido($value)) {
+                //             $fail('El número de CUI no es válido');
+                //         }
+                //     }
+                // ]
             ],
             2 => [
                 'razon'      => 'required|string|min:5|max:1000',
