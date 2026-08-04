@@ -82,17 +82,17 @@ class SolicitudController extends Controller
                     $requisitoTramite = RequisitoTramite::where('tramite_id', $tramite->id)
                         ->where('requisito_id', $requisito->id)
                         ->first();
-                    // crear detalle sin archivo
-                    $detalle = DetalleSolicitud::create([
-                        'path' => null,
-                        'tipo' => 'dependiente',
-                        'solicitud_id' => $solicitud->id,
-                        'user_id' => null,
-                        'requisito_tramite_id' => $requisitoTramite?->id
-                    ]);
                     // si indicó que tiene dependientes
                     if ($request->boolean('tiene_dependientes') && $request->dependientes) {
                         foreach ($request->dependientes as $dependiente) {
+                            $detalle = DetalleSolicitud::create([
+                                'path' => null,
+                                'tipo' => 'dependiente',
+                                'solicitud_id' => $solicitud->id,
+                                'user_id' => null,
+                                'requisito_tramite_id' => $requisitoTramite?->id
+                            ]);
+
                             Dependiente::create([
                                 'nombres' => mb_convert_case(
                                     trim($dependiente['nombres']),
