@@ -25,15 +25,10 @@ class AdminSolicitudController extends Controller implements HasMiddleware
     public function descargarDocumento($id)
     {
         $documento = DetalleSolicitud::findOrFail($id);
-
         $ruta = storage_path('app/public/' . $documento->path);
-
         if (!file_exists($ruta)) {
             abort(404, 'Archivo no encontrado');
         }
-
-        
-
         return response()->download(
             $ruta,
             basename($ruta),
@@ -52,7 +47,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             : 'pdf.solicitudes_varias';
 
         $fecha = now();
-
         $pdf = Pdf::loadView($view, [
             'solicitud' => $solicitud,
             'dia' => $fecha->format('d'),
@@ -62,12 +56,10 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         // nombre del archivo
         $nombreArchivo = 'constancias/constancia_' .
             $solicitud->id . '_' . time() . '.pdf';
-
         Storage::disk('public')->put(
             $nombreArchivo,
             $pdf->output()
         );
-
         try {
             DB::transaction(function () use ($solicitud, $nombreArchivo) {
                 $estadoAnterior = $solicitud->estado;
@@ -98,7 +90,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         }
         return $pdf->download('constancia.pdf');
     }
-
     #[Override]
     public static function middleware()
     {
@@ -140,7 +131,6 @@ class AdminSolicitudController extends Controller implements HasMiddleware
             $solicitudes
         );
     }
-
     public function analisis()
     {
         $solicitudes = Solicitud::query()
@@ -169,13 +159,10 @@ class AdminSolicitudController extends Controller implements HasMiddleware
         $request->validate([
             'estado_id' => 'required|exists:estados,id'
         ]);
-
         $estadoAnterior = $solicitud->estado;
         $estadoNuevo = Estado::findOrFail($request->estado_id);
-
         $solicitud->estado_id = $estadoNuevo->id;
         $solicitud->save();
-
         Bitacora::create([
             'solicitud_id' => $solicitud->id,
             'user_id' => auth()->id(),

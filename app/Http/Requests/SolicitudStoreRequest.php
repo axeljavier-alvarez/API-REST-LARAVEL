@@ -42,13 +42,11 @@ class SolicitudStoreRequest extends FormRequest
             2 => [
                 'razon'      => 'required|string|min:5|max:1000',
                 'tramite_id' => 'required|exists:tramites,id',
-
             ],
             3 => [
                 'observaciones' => 'nullable|string|max:1000',
             ]
         ];
-
         return $rules[$step] ?? [];
     }
     /**
@@ -57,17 +55,12 @@ class SolicitudStoreRequest extends FormRequest
     public function rules(): array
     {
         if ($this->has('step')) {
-
             $rules = $this->rulesByStep((int) $this->input('step'));
-
             // Si estamos validando el paso 2
             if ((int) $this->input('step') === 2 && $this->tramite_id) {
-
                 $tramite = Tramite::with('requisitos')
                     ->find($this->tramite_id);
-
                 if ($tramite) {
-
                     foreach ($tramite->requisitos as $requisito) {
                         // CARGA FAMILIAR
                         $esCargaFamiliar = mb_strtolower(trim($requisito->nombre)) === 'cargas familiares';
@@ -98,7 +91,6 @@ class SolicitudStoreRequest extends FormRequest
                     }
                 }
             }
-
             return $rules;
         }
         $rules = array_merge(
@@ -126,10 +118,8 @@ class SolicitudStoreRequest extends FormRequest
                             ];
                             $rules['dependientes.*.nombres'] =
                                 'required_if:tiene_dependientes,1|string|max:100';
-
                             $rules['dependientes.*.apellidos'] =
                                 'required_if:tiene_dependientes,1|string|max:100';
-
                             continue;
                         }
                         // Requisitos que sí son archivos
@@ -199,14 +189,11 @@ class SolicitudStoreRequest extends FormRequest
     {
         $cui = preg_replace('/[^0-9]/', '', $cui);
         if (strlen($cui) !== 13) return false;
-
         $numero = substr($cui, 0, 8);
         $verificador = (int)substr($cui, 8, 1);
         $depto = (int)substr($cui, 9, 2);
         $muni = (int)substr($cui, 11, 2);
-
         $munisPorDepto = [17, 8, 16, 16, 13, 14, 19, 8, 24, 21, 9, 30, 32, 21, 8, 17, 14, 5, 11, 11, 7, 17];
-
         if ($depto < 1 || $depto > count($munisPorDepto)) return false;
         if ($muni < 1 || $muni > $munisPorDepto[$depto - 1]) return false;
 

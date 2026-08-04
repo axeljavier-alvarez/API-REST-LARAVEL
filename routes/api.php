@@ -16,7 +16,6 @@ use App\Http\Controllers\Api\DesarrolloSocial\Admin\AdminSolicitudController;
 use App\Models\DesarrolloSocial\Estado;
 use App\Models\DesarrolloSocial\Bitacora;
 use Illuminate\Support\Facades\DB;
-
 // descargar archivo
 Route::get(
     'solicitudes/documentos/{detalleSolicitud}/download',
@@ -27,10 +26,8 @@ Route::put(
 'solicitudes/{solicitud}/rechazar',
 [AdminSolicitudController::class, 'rechazar']
 );
-
 Route::get('solicitudes/{solicitud}/pdf',
 [AdminSolicitudController::class, 'pdf']);
-
 Route::apiResource('tramitesDashboard', AdminTramiteController::class)->only(['index']);
 Route::apiResource('estadosDashboard', AdminEstadoController::class)->only(['index']);
 Route::apiResource(
@@ -52,14 +49,11 @@ Route::get(
     'solicitudesPorAutorizar',
     [AdminSolicitudController::class, 'solicitudesPorAutorizar']
 );
-
 // ver solicitudes visita de campo
 Route::get(
     'solicitudesVisitas',
     [AdminSolicitudController::class, 'visitas']
 );
-
-
 // admin
 Route::post(
     'solicitudes/{solicitud}/cambiar-estado',
@@ -71,13 +65,11 @@ Route::post(
     'solicitudes/{solicitud}/visita',
     [AdminSolicitudController::class, 'guardarVisita']
 );
-
 // autorizar
 Route::get(
     'autorizar',
     [AdminSolicitudController::class, 'autorizar']
 );
-
 // ruta nueva
 Route::post('/solicitudes/validar-paso', [SolicitudController::class, 'validarPaso']);
 Route::apiResource('solicitudes', SolicitudController::class);
