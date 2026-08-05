@@ -84,9 +84,19 @@ class SolicitudController extends Controller
                         ->first();
                     // si indicó que tiene dependientes
                     if ($request->boolean('tiene_dependientes') && $request->dependientes) {
-                        foreach ($request->dependientes as $dependiente) {
+                        foreach ($request->dependientes as $index => $dependiente) {
+                            $path = null;
+                            if ($request->hasFile("dependientes.$index.archivo")) {
+                                $path = $request
+                                    ->file("dependientes.$index.archivo")
+                                    ->store(
+                                        'solicitudes/' . $solicitud->id,
+                                        'public'
+                                    );
+                            }
+
                             $detalle = DetalleSolicitud::create([
-                                'path' => null,
+                                'path' => $path,
                                 'tipo' => 'dependiente',
                                 'solicitud_id' => $solicitud->id,
                                 'user_id' => null,

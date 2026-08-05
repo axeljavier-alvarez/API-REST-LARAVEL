@@ -21,23 +21,23 @@ class SolicitudStoreRequest extends FormRequest
     {
         $rules = [
             1 => [
-                'nombres'   => 'required|string|max:60',
-                'apellidos' => 'required|string|max:60',
-                'email' => 'required|email|unique:solicitudes,email|max:45',
-                'telefono'  => 'required|numeric|digits_between:8,15',
-                'domicilio' => 'required|string|max:255',
-                'zona'      => 'required|integer',
-                'cui' => [
-                    'required',
-                    'string',
-                    'digits:13',
-                    'unique:solicitudes,cui,' . ($this->solicitud?->id ?? 'NULL'),
-                    function ($attribute, $value, $fail) {
-                        if (!$this->cuiEsValido($value)) {
-                            $fail('El número de CUI no es válido');
-                        }
-                    }
-                ]
+                // 'nombres'   => 'required|string|max:60',
+                // 'apellidos' => 'required|string|max:60',
+                // 'email' => 'required|email|unique:solicitudes,email|max:45',
+                // 'telefono'  => 'required|numeric|digits_between:8,15',
+                // 'domicilio' => 'required|string|max:255',
+                // 'zona'      => 'required|integer',
+                // 'cui' => [
+                //     'required',
+                //     'string',
+                //     'digits:13',
+                //     'unique:solicitudes,cui,' . ($this->solicitud?->id ?? 'NULL'),
+                //     function ($attribute, $value, $fail) {
+                //         if (!$this->cuiEsValido($value)) {
+                //             $fail('El número de CUI no es válido');
+                //         }
+                //     }
+                // ]
             ],
             2 => [
                 'razon'      => 'required|string|min:5|max:1000',
@@ -77,6 +77,12 @@ class SolicitudStoreRequest extends FormRequest
                                 'required_if:tiene_dependientes,1|string|max:100';
                             $rules['dependientes.*.apellidos'] =
                                 'required_if:tiene_dependientes,1|string|max:100';
+                            $rules['dependientes.*.archivo'] = [
+                                'required_if:tiene_dependientes,1',
+                                'file',
+                                'mimes:pdf,jpg,jpeg,png',
+                                'max:2048',
+                            ];
                             continue;
                         }
                         $campo = 'requisito_' . $requisito->id;
@@ -120,6 +126,12 @@ class SolicitudStoreRequest extends FormRequest
                                 'required_if:tiene_dependientes,1|string|max:100';
                             $rules['dependientes.*.apellidos'] =
                                 'required_if:tiene_dependientes,1|string|max:100';
+                            $rules['dependientes.*.archivo'] = [
+                                'required_if:tiene_dependientes,1',
+                                'file',
+                                'mimes:pdf,jpg,jpeg,png',
+                                'max:2048',
+                            ];
                             continue;
                         }
                         // Requisitos que sí son archivos
@@ -158,6 +170,17 @@ class SolicitudStoreRequest extends FormRequest
             'razon.min'            => 'La razón debe tener al menos 5 caracteres.',
             'tramite_id.required'  => 'Debe seleccionar un tipo de trámite.',
             'tramite_id.exists'    => 'El trámite seleccionado no es válido.',
+
+            // mensajes para archivo de dependientes
+            'dependientes.*.archivo.required_if' =>
+            'Debe adjuntar el documento del dependiente.',
+            'dependientes.*.archivo.file' =>
+            'El documento del dependiente debe ser un archivo válido.',
+            'dependientes.*.archivo.mimes' =>
+            'El documento debe ser PDF, JPG o PNG.',
+            'dependientes.*.archivo.max' =>
+            'El documento no debe superar los 2 MB.',
+
         ];
         if ($this->tramite_id) {
             $tramite = Tramite::with('requisitos')
@@ -171,7 +194,6 @@ class SolicitudStoreRequest extends FormRequest
                         "{$requisito->nombre} debe ser un archivo válido.";
                     $messages["{$campo}.mimes"] =
                         "{$requisito->nombre} debe ser PDF, JPG o PNG";
-
                     $messages["{$campo}.max"] =
                         "{$requisito->nombre} no debe superar los 2 MB.";
                 }
