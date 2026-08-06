@@ -62,18 +62,47 @@ class SolicitudController extends Controller
             ]);
             $solicitud->no_solicitud = $solicitud->id . '-' . date('Y');
             $solicitud->save();
-
             Bitacora::create([
                 'solicitud_id' => $solicitud->id,
                 'user_id'      => null,
                 'evento' => 'CREACIÓN',
                 'descripcion'  => 'Solicitud creada exitosamente desde el formulario.',
             ]);
-
-            $tramite = Tramite::with('requisitos')
+            // mensajes de bitacora
+                if($request->tramite_id == 6){
+                    if($request->tipo_persona_penal == 'menor'){
+                        Bitacora::create([
+                            'solicitud_id' => $solicitud->id,
+                            'user_id' => null,
+                            'evento' => 'MENOR DE EDAD',
+                            'descripcion' => 'Adolescente en conflicto con la ley penal'
+                        ]);
+                    }
+                    if($request->tipo_persona_penal == 'mayor'){
+                        Bitacora::create([
+                            'solicitud_id' => $solicitud->id,
+                            'user_id' => null,
+                            'evento' => 'MAYOR DE EDAD',
+                            'descripcion' => 'Persona mayor de edad en conflicto con la ley penal'                
+                        ]);
+                    }
+                }
+                $tramite = Tramite::with('requisitos')
                 ->findOrFail($request->tramite_id);
-
-            foreach ($tramite->requisitos as $requisito) {
+                $requisitos = $tramite->requisitos;
+                if($request->tramite_id == 6){
+                    if($request->tipo_persona_penal == 'menor'){
+                        $requisitos = $tramite->requisitos
+                            ->whereIn('id', [1,2,3,4]);
+                    }
+                    if($request->tipo_persona_penal == 'mayor'){
+                        $requisitos = $tramite->requisitos
+                            ->whereIn('id', [1,5,6,7,8]);
+                    }
+                }
+            
+            foreach ($requisitos as $requisito) {
+                
                 $campo = 'requisito_' . $requisito->id;
                 $esCargaFamiliar = mb_strtolower(trim($requisito->nombre))
                     === 'cargas familiares';

@@ -42,6 +42,10 @@ class SolicitudStoreRequest extends FormRequest
             2 => [
                 'razon'      => 'required|string|min:5|max:1000',
                 'tramite_id' => 'required|exists:tramites,id',
+                'tipo_persona_penal' => [
+                    'required_if:tramite_id,6',
+                    'in:menor,mayor'
+                ]
             ],
             3 => [
                 'observaciones' => 'nullable|string|max:1000',
@@ -58,10 +62,26 @@ class SolicitudStoreRequest extends FormRequest
             $rules = $this->rulesByStep((int) $this->input('step'));
             // Si estamos validando el paso 2
             if ((int) $this->input('step') === 2 && $this->tramite_id) {
+                
                 $tramite = Tramite::with('requisitos')
-                    ->find($this->tramite_id);
+                ->find($this->tramite_id);
+    
                 if ($tramite) {
-                    foreach ($tramite->requisitos as $requisito) {
+
+
+                    $requisitos = $tramite->requisitos;
+                    // indicando que requitios por tipo_persona_penal
+                    if($this->tramite_id == 6){
+                        if($this->tipo_persona_penal == 'menor'){
+                            $requisitos = $tramite->requisitos
+                                ->whereIn('id',[1,2,3,4]);
+                        }
+                        if($this->tipo_persona_penal == 'mayor'){
+                            $requisitos = $tramite->requisitos
+                                ->whereIn('id',[1,5,6,7,8]);
+                        }
+                    }
+                    foreach ($requisitos as $requisito) {
                         // CARGA FAMILIAR
                         $esCargaFamiliar = mb_strtolower(trim($requisito->nombre)) === 'cargas familiares';
 
@@ -111,8 +131,19 @@ class SolicitudStoreRequest extends FormRequest
                 $tramite = Tramite::with('requisitos')
                     ->find($this->tramite_id);
                 if ($tramite) {
-                    foreach ($tramite->requisitos as $requisito) {
-                        // Validar si es cargas familiares
+                    // validacion completa
+                    $requisitos = $tramite->requisitos;
+                    if($this->tramite_id == 6){
+                        if($this->tipo_persona_penal == 'menor'){
+                            $requisitos = $tramite->requisitos
+                            ->whereIn('id',[1,2,3,4]);
+                        }
+                        if($this->tipo_persona_penal == 'mayor'){
+                            $requisitos = $tramite->requisitos
+                            ->whereIn('id',[1,5,6,7,8]);
+                        }
+                    }
+                    foreach ($requisitos as $requisito) {                        // Validar si es cargas familiares
                         $esCargaFamiliar = mb_strtolower(trim($requisito->nombre)) === 'cargas familiares';
                         if ($esCargaFamiliar) {
                             $rules['tiene_dependientes'] = 'required|boolean';
@@ -180,7 +211,11 @@ class SolicitudStoreRequest extends FormRequest
             'El documento debe ser PDF, JPG o PNG.',
             'dependientes.*.archivo.max' =>
             'El documento no debe superar los 2 MB.',
-
+            // errores de persona menor o mayor de edad
+            'tipo_persona_penal.required_if' =>
+            'Debe seleccionar si la persona es menor o mayor de edad.',
+            'tipo_persona_penal.in' =>
+            'El tipo de persona seleccionado no es valido'
         ];
         if ($this->tramite_id) {
             $tramite = Tramite::with('requisitos')
