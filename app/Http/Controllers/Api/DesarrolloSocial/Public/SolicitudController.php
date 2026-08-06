@@ -90,7 +90,7 @@ class SolicitudController extends Controller
                                 $path = $request
                                     ->file("dependientes.$index.archivo")
                                     ->store(
-                                        'solicitudes/' . $solicitud->id,
+                                        'dependientes/' . $solicitud->id,
                                         'public'
                                     );
                             }
