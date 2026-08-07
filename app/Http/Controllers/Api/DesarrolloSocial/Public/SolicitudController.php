@@ -93,11 +93,11 @@ class SolicitudController extends Controller
                 if($request->tramite_id == 6){
                     if($request->tipo_persona_penal == 'menor'){
                         $requisitos = $tramite->requisitos
-                            ->whereIn('id', [1,2,3,4]);
+                          ->whereIn('id', [1, 2, 11, 7]);
                     }
                     if($request->tipo_persona_penal == 'mayor'){
                         $requisitos = $tramite->requisitos
-                            ->whereIn('id', [1,5,6,7,8]);
+                            ->whereIn('id', [1, 10, 2, 12]);
                     }
                 }
             

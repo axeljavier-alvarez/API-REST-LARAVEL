@@ -73,12 +73,13 @@ class SolicitudStoreRequest extends FormRequest
                     // indicando que requitios por tipo_persona_penal
                     if($this->tramite_id == 6){
                         if($this->tipo_persona_penal == 'menor'){
-                            $requisitos = $tramite->requisitos
-                                ->whereIn('id',[1,2,3,4]);
+                            $requisitos = $tramite->requisitos                                
+                                ->whereIn('id', [1, 2, 11, 7]);
+
                         }
                         if($this->tipo_persona_penal == 'mayor'){
                             $requisitos = $tramite->requisitos
-                                ->whereIn('id',[1,5,6,7,8]);
+                                ->whereIn('id', [1, 10, 2, 12]);
                         }
                     }
                     foreach ($requisitos as $requisito) {
@@ -136,11 +137,11 @@ class SolicitudStoreRequest extends FormRequest
                     if($this->tramite_id == 6){
                         if($this->tipo_persona_penal == 'menor'){
                             $requisitos = $tramite->requisitos
-                            ->whereIn('id',[1,2,3,4]);
+                             ->whereIn('id', [1, 2, 11, 7]);
                         }
                         if($this->tipo_persona_penal == 'mayor'){
                             $requisitos = $tramite->requisitos
-                            ->whereIn('id',[1,5,6,7,8]);
+                             ->whereIn('id', [1, 10, 2, 12]);
                         }
                     }
                     foreach ($requisitos as $requisito) {                        // Validar si es cargas familiares
